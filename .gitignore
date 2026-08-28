@@ -1,0 +1,128 @@
+# ---- Dependencies ----
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ---- Next.js build output ----
+.next/
+out/
+build/
+dist/
+.swc/
+
+# ---- Environment / secrets ----
+# Ignore every .env variant, including .env and .env.local.
+.env
+.env.*
+*.env
+# Allow committed, non-secret templates only.
+!.env.example
+!.env.*.example
+!.env.template
+
+# ---- Credentials, keys, certificates ----
+*.pem
+*.key
+*.p12
+*.pfx
+*.p8
+*.jks
+*.keystore
+*.crt
+*.cer
+*.der
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+*.ppk
+secrets.*
+secrets/
+credentials.json
+service-account*.json
+gha-creds-*.json
+.netrc
+.npmrc
+.yarnrc
+.pypirc
+.htpasswd
+
+# ---- Cloud / tooling state that can carry tokens ----
+.vercel/
+.netlify/
+.serverless/
+.aws/
+.gcloud/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+.wrangler/
+.supabase/
+.firebase/
+.firebaserc
+
+# ---- Testing / coverage ----
+coverage/
+.nyc_output/
+*.lcov
+/playwright-report/
+/test-results/
+/blob-report/
+.playwright/
+
+# ---- Caches ----
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+next-env.d.ts
+
+# ---- Logs ----
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ---- Databases / dumps ----
+*.sqlite
+*.sqlite3
+*.db
+*.sql
+*.dump
+
+# ---- Editor / OS ----
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+
+# ---- Misc ----
+*.pid
+*.seed
+*.pid.lock
+.tmp/
+tmp/
