@@ -11,7 +11,7 @@ or a future session adding to it, as already happened twice — and nothing
 keeps this file in sync automatically. If the two ever disagree, the issue
 wins.
 
-Snapshotted: 2026-09-11
+Snapshotted: 2026-09-11 (after landing-page addition)
 
 To refresh this file to match the live issue:
 
@@ -60,7 +60,9 @@ never displayed (ADR-0001).
 
 ## User Stories
 
-Actor is the **Reader** (the authenticated user).
+Actor is the **Reader** (the authenticated user). Stories 49–55 have a second
+actor, a **prospective Reader** — someone at the landing page who has not signed
+in yet. (Added 2026-09-11; `CONTEXT.md` does not define this term yet.)
 
 ### Account and privacy
 
@@ -136,6 +138,16 @@ Actor is the **Reader** (the authenticated user).
 46. As a Reader, I want Redline to tell me plainly when a Document is genuinely low-risk, so that I believe it the times it does flag something.
 47. As a Reader, I want a failed analysis to be retryable without re-uploading the Document, so that a transient error does not cost me the extracted text.
 48. As a Reader, I want analysis progress shown while it runs, so that I know the request is alive.
+
+### The front door (added 2026-09-11, PRD §3.7)
+
+49. As a prospective Reader, I want the landing page to tell me in one screen what Redline does, who it is for, and at which moment (before I sign), so that I can tell whether it is for me without signing up.
+50. As a prospective Reader, I want the page to say that every warning shows the exact sentence it came from and that a warning which can't is never shown, so that I understand how I would check its work.
+51. As a prospective Reader, I want the page to say that my file is parsed in my browser and never uploaded, so that I know a confidential contract is not leaving my machine before I trust it with one.
+52. As a prospective Reader, I want the page to say the analysis is AI-generated and is not legal advice, so that I calibrate my expectations before I start.
+53. As a prospective Reader, I want one clear call to action that takes me to sign-up / sign-in, so that I know what to do next.
+54. As a prospective Reader, I want the page to work on my phone, so that I can read it from the message the contract arrived in.
+55. As a signed-in Reader, I want to land in the app rather than on the marketing page, so that I am not re-sold a product I already use.
 
 ## Implementation Decisions
 
@@ -226,6 +238,26 @@ its owning Reader)
   persisted in v1.
 - The "AI-generated, not legal advice" notice appears on every analysis view.
 
+### Landing page (added 2026-09-11)
+
+- Served at `/`. Static content: no model calls, no database reads, no
+  per-visitor state. It is the one route that must work with Supabase and
+  OpenRouter unconfigured.
+- Copy is bound by the same standing rule as the analysis: it states only what
+  the product actually does. No pricing (payments are out of scope), no
+  testimonials, logos, usage counts, or accuracy figures (none exist — PRD §8),
+  no claim of equivalence to a lawyer's review (research §5.7).
+- The "AI-generated, not legal advice" statement appears on the page itself,
+  not only after sign-in.
+- The call to action targets the sign-in route. Until stories 1–3 ship, that
+  route does not exist; the page must not pretend otherwise (see Further Notes).
+- A signed-in Reader requesting `/` is redirected into the app (story 55).
+  Which route that is depends on the library / upload work and is **not yet
+  decided**.
+- Design direction (visual world, typography, palette) is not decided in this
+  spec; it is established through the design process and recorded in
+  `DESIGN.md` when the page is built.
+
 ### Runtime version pinning — not yet done
 
 - Nothing currently pins the Node version the app targets (no `engines` field,
@@ -314,6 +346,9 @@ its owning Reader)
   Sentence and so cannot be a Flag (ADR-0001). Whether the summary may note a
   significant silence is **not yet decided**.
 - Non-English Documents.
+- On the landing page: a pricing section, a waitlist or email capture, a blog
+  or docs section, and any social proof. The page is one screen and one call
+  to action.
 
 ## Further Notes
 
@@ -346,6 +381,23 @@ it blocks begins; none blocks scaffolding the app or building Seam 2.
   check is "dropped and logged with enough context to investigate," but
   nothing says where that log goes or who is expected to look at it. Right
   now the invariant has no owner watching for violations.
+- **The public name** (landing page) — the page is the first place the name is
+  shown to a stranger, and `research/summary.md` §5.1 records a shipping
+  product called Redline with the same feature set. Working name or real name
+  must be decided before the page is public.
+- **Where the call to action goes** — sign-up / sign-in (stories 1–3) has no
+  ticket and no route yet. The landing page can ship with the CTA pointing at
+  the intended route, but it is not demoable end-to-end until auth exists.
+- **Where a signed-in Reader lands** (story 55) — depends on which app route
+  is the home: the library, or the upload screen.
+- **Deployment Protection** — already listed above; it now also blocks the
+  landing page from being seen by anyone but the Vercel account owner.
+- **"Prospective Reader"** — used in stories 49–55 and not in `CONTEXT.md`.
+  Either add it to the glossary or fold it into "Reader" with a note that the
+  Reader is a role, not a login (which `CONTEXT.md` already says).
 
 The two test seams were confirmed with the product owner. Everything outside them
 is standard framework plumbing, tested incidentally.
+
+
+

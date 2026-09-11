@@ -98,7 +98,7 @@ on what the product can charge.
 
 ## 3. What the first version does
 
-Exactly these six things, and nothing outside this list. When something looks
+Exactly what is on this list, and nothing outside it. When something looks
 like the obvious next feature and is not here, it gets asked about first.
 
 1. **A plain-English summary** of the whole document.
@@ -113,6 +113,25 @@ like the obvious next feature and is not here, it gets asked about first.
    they will not accept.
 6. **A saved library** of the reader's past documents. Extracted text only; the
    original file is never stored.
+
+**Added 2026-09-11:**
+
+7. **A public landing page** — the front door at `/` for someone who has not
+   signed in. It exists so the anchor reader (§1) can tell in one screen whether
+   this is for them, and so the trust claim is made before a single document is
+   uploaded. It must say, in this order of importance:
+   - what Redline does, for whom, and at which moment (pre-signature, §6.2);
+   - the trust mechanism: every warning shows the exact sentence it came from,
+     and a warning that can't is never shown (`docs/adr/0001`);
+   - the privacy stance: the file is parsed in the browser and never uploaded;
+   - that the analysis is AI-generated and is not legal advice;
+   - one call to action into sign-up / sign-in.
+
+   It must not: show pricing (§7, payments are out); show testimonials, customer
+   logos, usage numbers, or accuracy figures (none exist — §8); or claim
+   equivalence to a lawyer's review (§5.7 of the research, the DoNotPay order).
+   Copy states only what the product actually does, the same standing rule that
+   governs the analysis itself.
 
 ---
 
@@ -261,3 +280,12 @@ lawyer waits for a second version that may not come.
 - **Not yet grilled at all:** which error is worse to make (false alarm vs.
   miss) and how that asymmetry shapes the ranking; how confident the output
   should sound when the model is not certain.
+- **§3.7, landing page — the public name.** The research names a shipping
+  product called Redline with the same feature set (`research/summary.md`
+  §5.1). The landing page is the first place the name is shown to a stranger;
+  whether "Redline" is the working name or the real one has to be decided
+  before it goes public.
+- **§3.7 — what the call to action leads to.** Sign-up does not exist yet
+  (issue #1 stories 1–3). Until it does, the page has nowhere to send anyone.
+- **§3.7 — when the page is reachable.** Vercel Deployment Protection currently
+  hides the whole deployment; a landing page nobody can reach is a mock-up.

@@ -54,3 +54,7 @@ These are deliberately undecided. Do not resolve them by picking one silently.
   because a key is public the moment it is pushed and has to be rotated.
 - State only what the document says. Where the text does not support a claim,
   the product does not make it.
+- All copy a user reads in this product — the landing page, UI labels, error
+  messages, empty states — has to be run through the humanizer skill before it
+  is committed. Copy that reads as though a model wrote it is a defect, not a
+  matter of taste.
