@@ -33,8 +33,9 @@ _Avoid_: redline (as a verb), suggestion, revision, edit.
 
 **Red Line**:
 A rule the Reader sets in advance about what they will not accept in a Document.
-The set of Red Lines drives the analysis — which clauses become Flags, and how
-severe.
+Red Lines shape the analysis: a Flag that breaks one is marked and promoted. A
+Red Line can add a Flag only with a Source Sentence behind it, and can never
+remove or downgrade one (see `docs/adr/0003`).
 _Avoid_: preference, requirement, rule, setting.
 
 **Pre-signature**:

@@ -275,8 +275,9 @@ lawyer waits for a second version that may not come.
 - **§5** — the entire red-lines section is the research's list, not the owner's.
   Needs the owner's own clause judgment.
 - **§6.3** — what anchoring on creators costs, in the owner's own words.
-- **§8** — how a clean document is presented so the product stays believable
-  when it has little to report.
+- **§8** — how a clean document is presented. Resolved 2026-09-11 in the spec
+  (issue #1, story 46a): a clean result shows the list of clause types that
+  were checked, so it reads as a result rather than an empty screen.
 - **Not yet grilled at all:** which error is worse to make (false alarm vs.
   miss) and how that asymmetry shapes the ranking; how confident the output
   should sound when the model is not certain.

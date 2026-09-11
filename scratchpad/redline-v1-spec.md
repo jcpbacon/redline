@@ -11,7 +11,7 @@ or a future session adding to it, as already happened twice — and nothing
 keeps this file in sync automatically. If the two ever disagree, the issue
 wins.
 
-Snapshotted: 2026-09-11 (after landing-page addition)
+Snapshotted: 2026-09-11 (after ranking-seam, checked-list, and Red-Lines-never-hide amendments)
 
 To refresh this file to match the live issue:
 
@@ -122,6 +122,8 @@ in yet. (Added 2026-09-11; `CONTEXT.md` does not define this term yet.)
 36. As a Reader, I want my Red Lines to persist across Documents, so that I do not re-enter them for every contract.
 37. As a Reader, I want to re-run analysis on a Document after changing my Red Lines, so that the Flags reflect my current rules.
 38. As a Reader, I want a starting set of common Red Lines that I can keep or remove, so that I am not staring at an empty box.
+38a. As a Reader with no Red Lines set, I want exactly the same Flags found as any other Reader would get on this Document, so that the feature is optional rather than load-bearing. (Added 2026-09-11.)
+38b. As a Reader, I want my Red Lines to change the order and marking of Flags and never hide one, so that setting a Red Line cannot cost me coverage. (Added 2026-09-11.)
 
 ### The library
 
@@ -136,6 +138,7 @@ in yet. (Added 2026-09-11; `CONTEXT.md` does not define this term yet.)
 
 45. As a Reader, I want a visible statement that the analysis is AI-generated and is not legal advice, so that I calibrate how far to trust it.
 46. As a Reader, I want Redline to tell me plainly when a Document is genuinely low-risk, so that I believe it the times it does flag something.
+46a. As a Reader, I want to see the list of what was checked when nothing is found, so that a clean result is distinguishable from a failed or partial analysis. (Added 2026-09-11.)
 47. As a Reader, I want a failed analysis to be retryable without re-uploading the Document, so that a transient error does not cost me the extracted text.
 48. As a Reader, I want analysis progress shown while it runs, so that I know the request is alive.
 
@@ -184,9 +187,10 @@ in yet. (Added 2026-09-11; `CONTEXT.md` does not define this term yet.)
 One module, confirmed with the product owner as the primary test seam. Public
 interface:
 
-- `analyzeDocument(documentText, redLines) -> { summary, flags }`
-  - `flags` is ordered, most severe first, ties broken by position in the
-    Document.
+- `analyzeDocument(documentText, redLines) -> { summary, flags, checked }`
+  - `flags` is **unranked**; each carries the severity analysis assigned to it.
+  - `checked` is the list of clause types the analysis looked for, returned
+    whether or not any Flag was found (story 46a).
   - each flag: `{ severity, sourceSentence, whatItMeans, counterOffer,
     matchedRedLineId? }`.
 - `answerQuestion(question, documentText) -> { text, groundedIn } | { unanswerable: true }`
@@ -194,6 +198,23 @@ interface:
 
 The OpenRouter client is injected into the module so tests can supply a stub or
 a recorded response.
+
+### Seam 1b — ranking (pure function, no model call) — added 2026-09-11
+
+- `rankFlags(flags, redLines) -> { flags, clean }`
+  - `flags` ordered most severe first, ties broken by position in the
+    Document; a Flag matching a Red Line is promoted within its severity and
+    marked, never moved into a higher severity it did not earn.
+  - `clean` is true when no Flag survives; the caller renders the checked-list
+    from `analyzeDocument`'s `checked` (story 46a).
+- Severity is assigned during analysis, not here: it is a property of the
+  clause as written. Ranking consumes it, which is what keeps ranking free of
+  model calls and cheap to assert.
+- Red Lines change order and marking only. With an empty Red Lines list the
+  output contains exactly the Flags that went in; with any Red Lines list it
+  still contains exactly the Flags that went in (stories 38a, 38b). A Red Line
+  can add a Flag only through analysis, and only with a Source Sentence
+  (ADR-0001); it can never remove one.
 
 ### Citation enforcement (ADR-0001)
 
@@ -213,6 +234,9 @@ a recorded response.
   carries that Red Line's id in `matchedRedLineId`.
 - Red Lines never produce a Flag that lacks a Source Sentence. A Red Line about
   something the Document is simply silent on produces no Flag (ADR-0001).
+- Red Lines rank, they never hide (Seam 1b). The analysis prompt may use Red
+  Lines to look harder for a conflict; it may not use them to skip a clause
+  type or lower a severity.
 
 ### Severity
 
@@ -291,8 +315,19 @@ its owning Reader)
 - **Q&A:** an in-Document question returns `{ text, groundedIn }` with each
   grounding sentence present verbatim in the text; an out-of-Document question
   returns `{ unanswerable: true }`.
-- **Ordering:** Flags are returned most-severe-first, Document order breaking
-  ties.
+- **Checked-list:** `checked` is non-empty on every fixture, including one where
+  the stub returns no Flags.
+
+### Seam 1b — ranking (pure function tests over fixed Flag sets)
+
+- **Ordering:** most-severe-first, Document order breaking ties.
+- **Promotion:** a Flag matching a Red Line moves ahead of its severity peers
+  and is marked; it does not overtake a higher severity.
+- **Never hides:** for any Flag set and any Red Lines list, the set of Flags out
+  equals the set of Flags in. Asserted with and without Red Lines on the same
+  input (stories 38a, 38b).
+- **Clean:** an empty Flag set yields `clean: true`; a non-empty one yields
+  `clean: false`.
 
 ### Seam 1 — recall eval (separate job, live or replayed model, not a unit test)
 
@@ -360,8 +395,9 @@ it blocks begins; none blocks scaffolding the app or building Seam 2.
 - **Recall / false-positive targets** — blocks the recall eval gating anything.
 - **Red Lines seed list** — `PRD.md` §5 is the research's clause ranking, not the
   owner's lived judgement; needs the owner's pass before shipping as defaults.
-- **Clean-Document presentation** — how a low-risk result is shown so the tool
-  stays believable when it has little to report (`PRD.md` §4.6, §8).
+- **Clean-Document presentation** — resolved 2026-09-11: a clean result shows
+  the list of clause types that were checked (story 46a, Seam 1 `checked`).
+  The wording is still user-facing copy and goes through the humanizer rule.
 - **Error asymmetry** — whether Redline should lean toward over- or
   under-flagging when uncertain. Shapes the model instructions and the severity
   boundaries.
@@ -398,6 +434,7 @@ it blocks begins; none blocks scaffolding the app or building Seam 2.
 
 The two test seams were confirmed with the product owner. Everything outside them
 is standard framework plumbing, tested incidentally.
+
 
 
 
