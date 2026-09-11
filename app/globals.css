@@ -1,0 +1,64 @@
+:root {
+  --paper: #ffffff;
+  --paper-shade: #f3f2ee;
+  --ink: #161616;
+  --ink-soft: #4a4a4a;
+  --table: #2b7a78;
+  --table-deep: #1f5d5b;
+  --rank-1: #ff5a36;
+  --rank-2: #ff9a3c;
+  --rank-3: #ffe63b;
+  --card-rule: #b9d3e6;
+  --card-margin: #e0687a;
+  --contract: "Times New Roman", Times, "Nimbus Roman", serif;
+  --voice: var(--font-archivo), "Archivo", "Arial Narrow", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+  scrollbar-color: var(--table-deep) var(--paper-shade);
+}
+
+body {
+  margin: 0;
+  background: var(--table);
+  color: var(--ink);
+  font-family: var(--voice);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--rank-3);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--paper-shade);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--table-deep);
+  border: 3px solid var(--paper-shade);
+  border-radius: 8px;
+}

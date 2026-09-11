@@ -1,0 +1,548 @@
+/* ---------- the table ---------- */
+
+.table {
+  position: relative;
+  min-height: 100svh;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.12), transparent 60%),
+    var(--table);
+  overflow-x: clip;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- index card ---------- */
+
+.card {
+  position: absolute;
+  top: clamp(20px, 3vw, 40px);
+  left: clamp(16px, 3vw, 44px);
+  z-index: 3;
+  width: min(340px, calc(100% - 32px));
+  padding: 18px 20px 22px 34px;
+  background:
+    linear-gradient(90deg, transparent 22px, var(--card-margin) 22px, var(--card-margin) 23px, transparent 23px),
+    repeating-linear-gradient(180deg, transparent 0 27px, var(--card-rule) 27px 28px),
+    var(--paper);
+  background-position: 0 0, 0 14px, 0 0;
+  transform: rotate(1.6deg);
+  box-shadow:
+    0 14px 28px -10px rgba(0, 0, 0, 0.45),
+    0 2px 5px rgba(0, 0, 0, 0.18);
+  animation: settle 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.wordmark {
+  margin: 0;
+  font-family: var(--voice);
+  font-weight: 800;
+  font-stretch: 125%;
+  font-size: 30px;
+  line-height: 28px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.hook {
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 28px;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+/* ---------- the paper ---------- */
+
+.desk {
+  display: grid;
+  grid-template-columns: minmax(0, 780px) 290px;
+  justify-content: center;
+  padding: clamp(140px, 12vw, 180px) clamp(16px, 4vw, 64px) 96px clamp(16px, 4vw, 64px);
+}
+
+.paper {
+  position: relative;
+  grid-column: 1;
+  padding: 88px 56px 72px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--contract);
+  font-size: 16.5px;
+  line-height: 1.5;
+  transform: rotate(-1.2deg);
+  transform-origin: 40% 30%;
+  box-shadow:
+    0 26px 48px -18px rgba(0, 0, 0, 0.5),
+    0 3px 8px rgba(0, 0, 0, 0.18);
+  animation: settle 900ms 80ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.paperTitle {
+  margin: 0 0 22px;
+  font-family: var(--contract);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.stamp {
+  position: absolute;
+  top: 24px;
+  right: 30px;
+  margin: 0;
+  padding: 4px 10px 6px;
+  border: 2px solid rgba(70, 70, 70, 0.55);
+  border-radius: 3px;
+  color: rgba(70, 70, 70, 0.75);
+  font-family: var(--voice);
+  font-weight: 800;
+  font-stretch: 110%;
+  font-size: 15px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transform: rotate(-7deg);
+  mix-blend-mode: multiply;
+}
+
+.stampNote {
+  display: block;
+  margin-top: 4px;
+  font-weight: 500;
+  font-stretch: 100%;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.clause {
+  position: relative;
+}
+
+.clauseText {
+  margin: 0 0 14px;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.clauseTitle {
+  font-weight: 700;
+}
+
+.signatures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin-top: 34px;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+/* ---------- highlighter ---------- */
+
+.mark {
+  --stroke: rgba(255, 230, 59, 0.82);
+  color: inherit;
+  background-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--stroke) 2.5%,
+    var(--stroke) 97.5%,
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 0.08em 0.34em 0.06em 0.26em;
+  margin: 0 -0.22em 0 -0.18em;
+  border-radius: 0.9em 0.25em 0.7em 0.2em / 0.5em 0.3em 0.45em 0.25em;
+  mix-blend-mode: multiply;
+  transition: opacity 260ms ease;
+  animation: draw 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.mark[data-rank="1"] {
+  --stroke: rgba(255, 90, 54, 0.62);
+  animation-delay: 200ms;
+}
+.mark[data-rank="2"] {
+  --stroke: rgba(255, 154, 60, 0.7);
+  animation-delay: 480ms;
+}
+.mark[data-rank="3"] {
+  --stroke: rgba(255, 230, 59, 0.82);
+  animation-delay: 760ms;
+}
+
+/* hovering or opening one tab dims the other strokes */
+.paper:has(.tab[data-rank="1"]:is(:hover, :focus-within, [data-open])) .mark:not([data-rank="1"]),
+.paper:has(.tab[data-rank="2"]:is(:hover, :focus-within, [data-open])) .mark:not([data-rank="2"]),
+.paper:has(.tab[data-rank="3"]:is(:hover, :focus-within, [data-open])) .mark:not([data-rank="3"]) {
+  opacity: 0.3;
+}
+
+.mark:target {
+  outline: 2px dashed var(--ink);
+  outline-offset: 2px;
+}
+
+/* ---------- tabs ---------- */
+
+.tab {
+  --tab: var(--rank-3);
+  position: absolute;
+  top: 0;
+  left: calc(100% + 56px - 34px);
+  z-index: 2;
+  width: 262px;
+  font-family: var(--voice);
+  transform: translateX(0);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideIn 560ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.tab[data-rank="1"] {
+  --tab: var(--rank-1);
+  animation-delay: 1400ms;
+}
+.tab[data-rank="2"] {
+  --tab: var(--rank-2);
+  animation-delay: 1560ms;
+}
+.tab[data-rank="3"] {
+  --tab: var(--rank-3);
+  animation-delay: 1720ms;
+}
+
+.tab:is(:hover, :focus-within, [data-open]) {
+  z-index: 4;
+  transform: translateX(10px);
+}
+
+.tabFace {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  align-items: baseline;
+  width: 100%;
+  padding: 12px 16px 13px 22px;
+  border: 0;
+  border-radius: 0 7px 7px 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 46%, rgba(0, 0, 0, 0.06)),
+    var(--tab);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 10px 18px -8px rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    inset 3px 0 0 rgba(0, 0, 0, 0.14);
+}
+
+.tabRank {
+  font-weight: 800;
+  font-stretch: 90%;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tabHeading {
+  font-weight: 800;
+  font-stretch: 84%;
+  font-size: 19px;
+  line-height: 1.02;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.tab[data-rank="1"] .tabHeading {
+  font-size: 24px;
+}
+
+.tabBody {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 360ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab:is(:hover, :focus-within, [data-open]) .tabBody {
+  grid-template-rows: 1fr;
+}
+
+.tabBodyInner {
+  overflow: hidden;
+  border-radius: 0 0 7px 0;
+  background: var(--paper);
+  box-shadow: 0 10px 18px -8px rgba(0, 0, 0, 0.5);
+}
+
+.tabMeaning {
+  margin: 0;
+  padding: 14px 16px 0 22px;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.tabMeta {
+  margin: 0;
+  padding: 10px 16px 14px 22px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.tabLink {
+  color: var(--ink);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+/* ---------- the one action ---------- */
+
+.action,
+.actionSheet {
+  display: inline-block;
+  font-family: var(--voice);
+  font-weight: 800;
+  font-stretch: 88%;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: 0 7px 7px 0;
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms ease;
+}
+
+.action {
+  position: absolute;
+  right: -228px;
+  bottom: 54px;
+  padding: 18px 26px 19px 26px;
+  box-shadow:
+    0 12px 22px -8px rgba(0, 0, 0, 0.6),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    inset 3px 0 0 rgba(255, 255, 255, 0.18);
+  animation: slideIn 560ms 1900ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.action:hover,
+.actionSheet:hover {
+  transform: translateX(8px);
+  background: #000;
+}
+
+.action:active,
+.actionSheet:active {
+  transform: translateX(4px);
+}
+
+/* ---------- the second sheet ---------- */
+
+.sheet {
+  position: relative;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 -22px 44px -24px rgba(0, 0, 0, 0.5);
+}
+
+.sheetInner {
+  max-width: 62ch;
+  margin: 0 auto;
+  padding: 64px clamp(20px, 5vw, 48px) 88px;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.sheetInner p {
+  margin: 0 0 8px;
+}
+
+.sheetHeading {
+  margin: 40px 0 6px;
+  font-family: var(--voice);
+  font-weight: 800;
+  font-stretch: 86%;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.sheetHeading:first-child {
+  margin-top: 0;
+}
+
+.actionSheet {
+  margin-top: 44px;
+  padding: 18px 28px 19px;
+  box-shadow:
+    0 12px 22px -8px rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* ---------- motion ---------- */
+
+@keyframes draw {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-36px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(18px) rotate(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .paper,
+  .mark,
+  .tab,
+  .action {
+    animation: none;
+  }
+  .tab,
+  .tabBody,
+  .action,
+  .actionSheet,
+  .mark {
+    transition: none;
+  }
+}
+
+/* ---------- narrow ---------- */
+
+@media (max-width: 1080px) {
+  .desk {
+    grid-template-columns: minmax(0, 1fr);
+    padding-right: clamp(16px, 4vw, 40px);
+    padding-left: clamp(16px, 4vw, 40px);
+  }
+
+  .paper {
+    padding: 56px 32px 64px;
+  }
+
+  .tab {
+    left: calc(100% + 32px - 30px);
+    width: 210px;
+  }
+
+  .action {
+    right: -170px;
+  }
+}
+
+@media (max-width: 760px) {
+  .card {
+    position: static;
+    width: auto;
+    margin: 20px 16px 0;
+    transform: rotate(-1deg);
+  }
+
+  .desk {
+    display: block;
+    padding: 28px 12px 64px;
+  }
+
+  .paper {
+    padding: 44px 18px 28px;
+    font-size: 15px;
+    transform: rotate(-0.6deg);
+    transform-origin: 50% 20%;
+  }
+
+  .paperTitle {
+    font-size: 16px;
+    margin-top: 18px;
+  }
+
+  .stamp {
+    top: 12px;
+    right: 14px;
+    font-size: 12px;
+    padding: 3px 8px 5px;
+  }
+
+  .stampNote {
+    font-size: 11px;
+  }
+
+  .clauseText {
+    text-align: left;
+    hyphens: none;
+  }
+
+  .tab {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: calc(100% + 14px);
+    margin: -4px -14px 18px 0;
+  }
+
+  .tab[data-rank="1"] .tabHeading {
+    font-size: 21px;
+  }
+
+  .tab:is(:hover, :focus-within, [data-open]) {
+    transform: translateX(6px);
+  }
+
+  .action {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    display: block;
+    margin: 28px -14px 0 0;
+    width: calc(100% + 14px);
+    text-align: center;
+  }
+
+  .sheetInner {
+    padding-top: 48px;
+    font-size: 17px;
+  }
+
+  .sheetHeading {
+    font-size: 24px;
+  }
+}

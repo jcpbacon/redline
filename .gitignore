@@ -126,3 +126,6 @@ desktop.ini
 *.pid.lock
 .tmp/
 tmp/
+
+# Impeccable review captures are regenerated every round; docs/design/first-round holds the one committed set
+.impeccable/review/

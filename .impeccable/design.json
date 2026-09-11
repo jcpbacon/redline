@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-11T00:00:00Z",
+  "title": "Design System: Redline",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#ffffff",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(38% 0 0)", "oklch(50% 0 0)", "oklch(61% 0 0)", "oklch(72% 0 0)", "oklch(84% 0 0)", "oklch(95% 0 0)"]
+      },
+      "paper-shade": {
+        "role": "neutral",
+        "displayName": "Paper Shade",
+        "canonical": "#f3f2ee",
+        "tonalRamp": ["oklch(15% 0.004 90)", "oklch(27% 0.004 90)", "oklch(38% 0.004 90)", "oklch(50% 0.004 90)", "oklch(61% 0.004 90)", "oklch(72% 0.004 90)", "oklch(84% 0.004 90)", "oklch(95% 0.004 90)"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#161616",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(38% 0 0)", "oklch(50% 0 0)", "oklch(61% 0 0)", "oklch(72% 0 0)", "oklch(84% 0 0)", "oklch(95% 0 0)"]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#4a4a4a",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(27% 0 0)", "oklch(38% 0 0)", "oklch(50% 0 0)", "oklch(61% 0 0)", "oklch(72% 0 0)", "oklch(84% 0 0)", "oklch(95% 0 0)"]
+      },
+      "table": {
+        "role": "primary",
+        "displayName": "Laminate Teal",
+        "canonical": "#2b7a78",
+        "tonalRamp": ["oklch(15% 0.03 187)", "oklch(27% 0.05 187)", "oklch(38% 0.06 187)", "oklch(50% 0.07 187)", "oklch(61% 0.07 187)", "oklch(72% 0.06 187)", "oklch(84% 0.05 187)", "oklch(95% 0.02 187)"]
+      },
+      "table-deep": {
+        "role": "primary",
+        "displayName": "Deep Laminate",
+        "canonical": "#1f5d5b",
+        "tonalRamp": ["oklch(15% 0.03 187)", "oklch(27% 0.05 187)", "oklch(38% 0.06 187)", "oklch(50% 0.07 187)", "oklch(61% 0.07 187)", "oklch(72% 0.06 187)", "oklch(84% 0.05 187)", "oklch(95% 0.02 187)"]
+      },
+      "rank-1": {
+        "role": "secondary",
+        "displayName": "Rank 1 Red-Orange",
+        "canonical": "#ff5a36",
+        "tonalRamp": ["oklch(15% 0.05 35)", "oklch(27% 0.09 35)", "oklch(38% 0.13 35)", "oklch(50% 0.17 35)", "oklch(61% 0.2 35)", "oklch(72% 0.17 35)", "oklch(84% 0.1 35)", "oklch(95% 0.03 35)"]
+      },
+      "rank-2": {
+        "role": "secondary",
+        "displayName": "Rank 2 Orange",
+        "canonical": "#ff9a3c",
+        "tonalRamp": ["oklch(15% 0.04 55)", "oklch(27% 0.07 55)", "oklch(38% 0.1 55)", "oklch(50% 0.13 55)", "oklch(61% 0.16 55)", "oklch(72% 0.17 55)", "oklch(84% 0.11 55)", "oklch(95% 0.04 55)"]
+      },
+      "rank-3": {
+        "role": "secondary",
+        "displayName": "Rank 3 Highlighter Yellow",
+        "canonical": "#ffe63b",
+        "tonalRamp": ["oklch(15% 0.03 100)", "oklch(27% 0.06 100)", "oklch(38% 0.09 100)", "oklch(50% 0.12 100)", "oklch(61% 0.14 100)", "oklch(72% 0.16 100)", "oklch(84% 0.18 100)", "oklch(95% 0.1 100)"]
+      },
+      "card-rule": {
+        "role": "tertiary",
+        "displayName": "Card Rule Blue",
+        "canonical": "#b9d3e6",
+        "tonalRamp": ["oklch(15% 0.02 240)", "oklch(27% 0.03 240)", "oklch(38% 0.04 240)", "oklch(50% 0.05 240)", "oklch(61% 0.05 240)", "oklch(72% 0.05 240)", "oklch(84% 0.04 240)", "oklch(95% 0.02 240)"]
+      },
+      "card-margin": {
+        "role": "tertiary",
+        "displayName": "Card Margin Red",
+        "canonical": "#e0687a",
+        "tonalRamp": ["oklch(15% 0.04 10)", "oklch(27% 0.08 10)", "oklch(38% 0.11 10)", "oklch(50% 0.14 10)", "oklch(61% 0.15 10)", "oklch(72% 0.13 10)", "oklch(84% 0.08 10)", "oklch(95% 0.03 10)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Wordmark", "purpose": "REDLINE on the index card only; Archivo at 125% width, on a 28px line to sit on the card's rule." },
+      "headline": { "displayName": "Sheet Heading", "purpose": "Section headings on the second sheet; 24px at ≤760px." },
+      "title": { "displayName": "Tab Heading", "purpose": "The plain-English heading on an index tab; the 1st-rank tab sets it at 24px (21px at ≤760px)." },
+      "action": { "displayName": "Action", "purpose": "The black action tab, both instances." },
+      "body": { "displayName": "Statement", "purpose": "Second-sheet prose, 62ch max; 17px at ≤760px." },
+      "body-compact": { "displayName": "Tab Meaning / Card Hook", "purpose": "Meaning text inside an open tab; the card hook uses the same size on a 28px line." },
+      "label": { "displayName": "Rank Ordinal", "purpose": "1ST / 2ND / 3RD on the tab face, baseline-aligned to the heading." },
+      "contract": { "displayName": "Contract Body", "purpose": "Every Document sentence and every Source Sentence; justified and hyphenated on desktop, left at ≤760px (15px)." },
+      "contract-title": { "displayName": "Contract Title", "purpose": "The agreement's centered uppercase title; 16px at ≤760px." }
+    },
+    "shadows": [
+      { "name": "paper-on-table", "value": "0 26px 48px -18px rgba(0,0,0,0.5), 0 3px 8px rgba(0,0,0,0.18)", "purpose": "The Document page on the table." },
+      { "name": "card-on-table", "value": "0 14px 28px -10px rgba(0,0,0,0.45), 0 2px 5px rgba(0,0,0,0.18)", "purpose": "The index card on the table." },
+      { "name": "tab-on-paper", "value": "0 10px 18px -8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.25), inset 3px 0 0 rgba(0,0,0,0.14)", "purpose": "Index tab face; the inset is the dark spine." },
+      { "name": "tab-body", "value": "0 10px 18px -8px rgba(0,0,0,0.5)", "purpose": "The open tab's paper body." },
+      { "name": "action-on-table", "value": "0 12px 22px -8px rgba(0,0,0,0.6), 0 1px 2px rgba(0,0,0,0.3), inset 3px 0 0 rgba(255,255,255,0.18)", "purpose": "The black action tab at the paper's edge; light spine." },
+      { "name": "action-on-paper", "value": "0 12px 22px -8px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.2)", "purpose": "The black action tab on the second sheet." },
+      { "name": "sheet-from-beneath", "value": "0 -22px 44px -24px rgba(0,0,0,0.5)", "purpose": "The second sheet's upward shadow onto the table." }
+    ],
+    "motion": [
+      { "name": "ease-settle", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Entrance settles, tab slide-in, tab slide-out, body reveal, action slide." },
+      { "name": "ease-draw", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Highlighter stroke draw." },
+      { "name": "duration-settle-card", "value": "700ms", "purpose": "Index card settle." },
+      { "name": "duration-settle-paper", "value": "900ms", "purpose": "Paper settle, delayed 80ms." },
+      { "name": "duration-draw", "value": "620ms", "purpose": "Each highlighter stroke; delays 200 / 480 / 760ms by rank." },
+      { "name": "duration-slide-in", "value": "560ms", "purpose": "Each tab slides in from -36px; delays 1400 / 1560 / 1720ms by rank; action at 1900ms. Fill backwards." },
+      { "name": "duration-tab-slide", "value": "320ms", "purpose": "Tab slides out 10px (6px at ≤760px) on hover / focus-within / open; action slides 8px on hover, 4px on active." },
+      { "name": "duration-body-reveal", "value": "360ms", "purpose": "Tab body grid-template-rows 0fr to 1fr." },
+      { "name": "duration-dim", "value": "260ms", "purpose": "Other strokes dim to 30% opacity while one tab is engaged." },
+      { "name": "duration-color", "value": "160ms", "purpose": "Action background to #000 on hover." },
+      { "name": "reduced-motion", "value": "animation: none; transition: none", "purpose": "prefers-reduced-motion: reduce removes every entrance animation and interaction transition on card, paper, mark, tab, body and action." }
+    ],
+    "breakpoints": [
+      { "name": "single-column", "value": "1080px", "purpose": "Below this the desk is one column, tabs 210px wide, action at right -170px." },
+      { "name": "in-flow", "value": "760px", "purpose": "Below this the card, tabs and action enter flow; tabs sit under their sentence and protrude 14px past the paper's right edge." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Index Tab (rank 1)",
+      "kind": "custom",
+      "refersTo": "index-tab-rank-1",
+      "description": "A plastic index tab stuck to the paper's right edge, naming the most severe Flag. Hover or focus slides it out and opens its meaning.",
+      "html": "<div class=\"ds-tab\" data-rank=\"1\"><button type=\"button\" class=\"ds-tab-face\" aria-expanded=\"false\"><span class=\"ds-tab-rank\">1st</span><span class=\"ds-tab-heading\">They own your video forever</span></button><div class=\"ds-tab-body\"><div class=\"ds-tab-body-inner\"><p class=\"ds-tab-meaning\">Once you post it, the brand can use it wherever and for as long as it likes, and you can't take that back.</p><p class=\"ds-tab-meta\">Ranked 1st of 3 by how badly it can hurt you. <a href=\"#\" class=\"ds-tab-link\">The sentence it came from is highlighted on the page.</a></p></div></div></div>",
+      "css": ".ds-tab { --tab: var(--rank-1, #ff5a36); position: relative; width: 262px; font-family: var(--voice, Archivo, 'Arial Narrow', Arial, sans-serif); transform: translateX(0); transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-tab:is(:hover, :focus-within) { transform: translateX(10px); } .ds-tab-face { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: baseline; width: 100%; padding: 12px 16px 13px 22px; border: 0; border-radius: 0 7px 7px 0; background: linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0) 46%, rgba(0,0,0,0.06)), var(--tab); color: var(--ink, #161616); text-align: left; cursor: pointer; font: inherit; box-shadow: 0 10px 18px -8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.25), inset 3px 0 0 rgba(0,0,0,0.14); } .ds-tab-face:focus-visible { outline: 3px solid var(--ink, #161616); outline-offset: 3px; } .ds-tab-rank { font-weight: 800; font-stretch: 90%; font-size: 13px; line-height: 1; letter-spacing: 0.06em; text-transform: uppercase; } .ds-tab-heading { font-weight: 800; font-stretch: 84%; font-size: 24px; line-height: 1.02; letter-spacing: -0.005em; text-transform: uppercase; text-wrap: balance; } .ds-tab-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 360ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-tab:is(:hover, :focus-within) .ds-tab-body { grid-template-rows: 1fr; } .ds-tab-body-inner { overflow: hidden; border-radius: 0 0 7px 0; background: var(--paper, #ffffff); box-shadow: 0 10px 18px -8px rgba(0,0,0,0.5); } .ds-tab-meaning { margin: 0; padding: 14px 16px 0 22px; font-size: 15px; line-height: 1.4; color: var(--ink, #161616); } .ds-tab-meta { margin: 0; padding: 10px 16px 14px 22px; color: var(--ink-soft, #4a4a4a); font-size: 13px; line-height: 1.4; } .ds-tab-link { color: var(--ink, #161616); text-decoration-thickness: 1.5px; text-underline-offset: 3px; } @media (prefers-reduced-motion: reduce) { .ds-tab, .ds-tab-body { transition: none; } }"
+    },
+    {
+      "name": "Index Tab (rank 2)",
+      "kind": "custom",
+      "refersTo": "index-tab-rank-2",
+      "description": "The second-ranked tab. Same component; orange fill, heading at the standard 19px.",
+      "html": "<div class=\"ds-tab2\"><button type=\"button\" class=\"ds-tab2-face\" aria-expanded=\"false\"><span class=\"ds-tab2-rank\">2nd</span><span class=\"ds-tab2-heading\">You pay their legal bills</span></button></div>",
+      "css": ".ds-tab2 { --tab: var(--rank-2, #ff9a3c); width: 262px; font-family: var(--voice, Archivo, 'Arial Narrow', Arial, sans-serif); transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-tab2:is(:hover, :focus-within) { transform: translateX(10px); } .ds-tab2-face { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: baseline; width: 100%; padding: 12px 16px 13px 22px; border: 0; border-radius: 0 7px 7px 0; background: linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0) 46%, rgba(0,0,0,0.06)), var(--tab); color: var(--ink, #161616); text-align: left; cursor: pointer; font: inherit; box-shadow: 0 10px 18px -8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.25), inset 3px 0 0 rgba(0,0,0,0.14); } .ds-tab2-face:focus-visible { outline: 3px solid var(--ink, #161616); outline-offset: 3px; } .ds-tab2-rank { font-weight: 800; font-stretch: 90%; font-size: 13px; line-height: 1; letter-spacing: 0.06em; text-transform: uppercase; } .ds-tab2-heading { font-weight: 800; font-stretch: 84%; font-size: 19px; line-height: 1.02; letter-spacing: -0.005em; text-transform: uppercase; text-wrap: balance; }"
+    },
+    {
+      "name": "Index Tab (rank 3)",
+      "kind": "custom",
+      "refersTo": "index-tab-rank-3",
+      "description": "The third-ranked tab. Same component; highlighter-yellow fill.",
+      "html": "<div class=\"ds-tab3\"><button type=\"button\" class=\"ds-tab3-face\" aria-expanded=\"false\"><span class=\"ds-tab3-rank\">3rd</span><span class=\"ds-tab3-heading\">Paid 90 days after they say so</span></button></div>",
+      "css": ".ds-tab3 { --tab: var(--rank-3, #ffe63b); width: 262px; font-family: var(--voice, Archivo, 'Arial Narrow', Arial, sans-serif); transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1); } .ds-tab3:is(:hover, :focus-within) { transform: translateX(10px); } .ds-tab3-face { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: baseline; width: 100%; padding: 12px 16px 13px 22px; border: 0; border-radius: 0 7px 7px 0; background: linear-gradient(180deg, rgba(255,255,255,0.42), rgba(255,255,255,0) 46%, rgba(0,0,0,0.06)), var(--tab); color: var(--ink, #161616); text-align: left; cursor: pointer; font: inherit; box-shadow: 0 10px 18px -8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.25), inset 3px 0 0 rgba(0,0,0,0.14); } .ds-tab3-face:focus-visible { outline: 3px solid var(--ink, #161616); outline-offset: 3px; } .ds-tab3-rank { font-weight: 800; font-stretch: 90%; font-size: 13px; line-height: 1; letter-spacing: 0.06em; text-transform: uppercase; } .ds-tab3-heading { font-weight: 800; font-stretch: 84%; font-size: 19px; line-height: 1.02; letter-spacing: -0.005em; text-transform: uppercase; text-wrap: balance; }"
+    },
+    {
+      "name": "Highlighter Mark",
+      "kind": "custom",
+      "refersTo": "highlighter-rank-1",
+      "description": "A translucent highlighter stroke over exactly one Source Sentence, in the Flag's rank color, multiplied into the contract's type. Three rank variants shown.",
+      "html": "<p class=\"ds-contract\">3. <b>License.</b> <mark class=\"ds-mark\" data-rank=\"1\">Creator hereby grants Brand a perpetual, irrevocable, worldwide, royalty-free license to use, reproduce, modify, and distribute the Content.</mark></p><p class=\"ds-contract\">4. <b>Indemnification.</b> <mark class=\"ds-mark\" data-rank=\"2\">Creator shall indemnify, defend, and hold harmless Brand and its affiliates.</mark></p><p class=\"ds-contract\">5. <b>Compensation.</b> Brand will pay Creator the Fee. <mark class=\"ds-mark\" data-rank=\"3\">Payment shall be due ninety (90) days following Brand's written approval.</mark></p>",
+      "css": ".ds-contract { margin: 0 0 14px; padding: 8px 12px; background: var(--paper, #ffffff); color: var(--ink, #161616); font-family: var(--contract, 'Times New Roman', Times, serif); font-size: 16.5px; line-height: 1.5; text-align: justify; hyphens: auto; } .ds-mark { --stroke: rgba(255,230,59,0.82); color: inherit; background-color: transparent; background-image: linear-gradient(90deg, transparent 0%, var(--stroke) 2.5%, var(--stroke) 97.5%, transparent 100%); background-repeat: no-repeat; background-size: 100% 100%; box-decoration-break: clone; -webkit-box-decoration-break: clone; padding: 0.08em 0.34em 0.06em 0.26em; margin: 0 -0.22em 0 -0.18em; border-radius: 0.9em 0.25em 0.7em 0.2em / 0.5em 0.3em 0.45em 0.25em; mix-blend-mode: multiply; transition: opacity 260ms ease; } .ds-mark[data-rank=\"1\"] { --stroke: rgba(255,90,54,0.62); } .ds-mark[data-rank=\"2\"] { --stroke: rgba(255,154,60,0.7); } .ds-mark[data-rank=\"3\"] { --stroke: rgba(255,230,59,0.82); } .ds-mark:target { outline: 2px dashed var(--ink, #161616); outline-offset: 2px; }"
+    },
+    {
+      "name": "Action Tab",
+      "kind": "button",
+      "refersTo": "action-tab",
+      "description": "The one action, as a black plastic tab. Hover deepens to pure black and slides it 8px; active 4px.",
+      "html": "<a href=\"#\" class=\"ds-action\">Try it on a document</a>",
+      "css": ".ds-action { display: inline-block; font-family: var(--voice, Archivo, 'Arial Narrow', Arial, sans-serif); font-weight: 800; font-stretch: 88%; font-size: 20px; line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; text-decoration: none; color: var(--paper, #ffffff); background: var(--ink, #161616); border-radius: 0 7px 7px 0; padding: 18px 26px 19px 26px; box-shadow: 0 12px 22px -8px rgba(0,0,0,0.6), 0 1px 2px rgba(0,0,0,0.3), inset 3px 0 0 rgba(255,255,255,0.18); transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms ease; } .ds-action:hover { transform: translateX(8px); background: #000; } .ds-action:active { transform: translateX(4px); } .ds-action:focus-visible { outline: 3px solid var(--ink, #161616); outline-offset: 3px; } @media (prefers-reduced-motion: reduce) { .ds-action { transition: none; } }"
+    },
+    {
+      "name": "Index Card",
+      "kind": "card",
+      "refersTo": "index-card",
+      "description": "A ruled white index card with a red margin line, rotated 1.6° on the table. Carries the wordmark and the one-line hook, each line sitting on a rule.",
+      "html": "<aside class=\"ds-card\"><p class=\"ds-wordmark\">Redline</p><p class=\"ds-hook\">Read the contract before you sign it. Every warning points at the sentence it came from.</p></aside>",
+      "css": ".ds-card { width: min(340px, 100%); padding: 18px 20px 22px 34px; background: linear-gradient(90deg, transparent 22px, var(--card-margin, #e0687a) 22px, var(--card-margin, #e0687a) 23px, transparent 23px), repeating-linear-gradient(180deg, transparent 0 27px, var(--card-rule, #b9d3e6) 27px 28px), var(--paper, #ffffff); background-position: 0 0, 0 14px, 0 0; color: var(--ink, #161616); font-family: var(--voice, Archivo, 'Arial Narrow', Arial, sans-serif); transform: rotate(1.6deg); box-shadow: 0 14px 28px -10px rgba(0,0,0,0.45), 0 2px 5px rgba(0,0,0,0.18); } .ds-wordmark { margin: 0; font-weight: 800; font-stretch: 125%; font-size: 30px; line-height: 28px; letter-spacing: -0.02em; text-transform: uppercase; } .ds-hook { margin: 12px 0 0; font-size: 15px; line-height: 28px; text-wrap: balance; }"
+    },
+    {
+      "name": "Paper with Stamp",
+      "kind": "card",
+      "refersTo": "paper",
+      "description": "The Document page: white paper rotated -1.2° with a soft cast shadow, the contract set in Times New Roman, and a grey multiplied SAMPLE stamp in the corner.",
+      "html": "<article class=\"ds-paper\"><p class=\"ds-stamp\">Sample<span class=\"ds-stamp-note\">written for this demonstration</span></p><h2 class=\"ds-paper-title\">Influencer Collaboration Agreement</h2><p class=\"ds-paper-text\"><b>1. Deliverables.</b> Creator will produce two (2) short-form videos and one (1) static post featuring the Product.</p><p class=\"ds-paper-text\"><b>2. Approval.</b> Creator will submit each item of Content for Brand's review at least five (5) business days before publication.</p><div class=\"ds-signatures\"><span>Brand ______________</span><span>Creator ______________</span></div></article>",
+      "css": ".ds-paper { position: relative; max-width: 780px; padding: 88px 56px 72px; background: var(--paper, #ffffff); color: var(--ink, #161616); font-family: var(--contract, 'Times New Roman', Times, serif); font-size: 16.5px; line-height: 1.5; transform: rotate(-1.2deg); transform-origin: 40% 30%; box-shadow: 0 26px 48px -18px rgba(0,0,0,0.5), 0 3px 8px rgba(0,0,0,0.18); } .ds-paper-title { margin: 0 0 22px; font-size: 19px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; text-align: center; } .ds-paper-text { margin: 0 0 14px; text-align: justify; hyphens: auto; } .ds-signatures { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 34px; color: var(--ink-soft, #4a4a4a); font-size: 14px; } .ds-stamp { position: absolute; top: 24px; right: 30px; margin: 0; padding: 4px 10px 6px; border: 2px solid rgba(70,70,70,0.55); border-radius: 3px; color: rgba(70,70,70,0.75); font-family: var(--voice, Archivo, 'Arial Narrow', Arial, sans-serif); font-weight: 800; font-stretch: 110%; font-size: 15px; line-height: 1; letter-spacing: 0.14em; text-transform: uppercase; transform: rotate(-7deg); mix-blend-mode: multiply; } .ds-stamp-note { display: block; margin-top: 4px; font-weight: 500; font-stretch: 100%; font-size: 11.5px; letter-spacing: 0.04em; text-transform: none; }"
+    },
+    {
+      "name": "Sheet Heading and Statement",
+      "kind": "custom",
+      "refersTo": "paper",
+      "description": "The second sheet's register: a compressed 800-weight uppercase Archivo heading over 18px Archivo prose in a 62ch column.",
+      "html": "<div class=\"ds-sheet\"><h2 class=\"ds-sheet-heading\">The rule</h2><p class=\"ds-sheet-p\">If Redline can't show you the sentence a warning came from, you don't see the warning. Every flag is something you can check against your own copy.</p></div>",
+      "css": ".ds-sheet { max-width: 62ch; padding: 24px; background: var(--paper, #ffffff); color: var(--ink, #161616); font-family: var(--voice, Archivo, 'Arial Narrow', Arial, sans-serif); font-size: 18px; line-height: 1.5; } .ds-sheet-heading { margin: 0 0 6px; font-weight: 800; font-stretch: 86%; font-size: 28px; line-height: 1; letter-spacing: -0.01em; text-transform: uppercase; } .ds-sheet-p { margin: 0 0 8px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Tabbed Contract",
+    "overview": "Redline's world is a real object, not an interface: a printed agreement lying on a saturated teal laminate kitchen table, three sentences struck with highlighter, three plastic index tabs stuck to the paper's right edge pointing at them. The tab is the flag. Everything the product does (find the sentence, name the danger, rank it) is already legible in the physical arrangement before a word of interface copy is read. The composition refuses the category layout (headline, subhead, button, screenshot, feature tiles) and instead lets the artifact make the argument.\n\nTwo registers share one sheet. The Document speaks in its own face, Times New Roman, justified and hyphenated the way a contract prints. Redline speaks in Archivo: condensed, 800-weight, uppercase on tabs, headings, the wordmark and the action; regular width and weight for statements. Rank is carried by size (the 1st tab's heading is set larger), by color (red-orange, orange, yellow), and always by a word (the ordinal), so no reader depends on color alone. Density is that of a page, not a dashboard; whitespace is paper margin, not padding.\n\nMaterials are honest to the metaphor: paper casts a soft shadow onto the table; highlighter is translucent and multiplies into the type; tabs carry a plastic sheen, a dark spine where they meet the page, and their own cast shadow. The build confirms these visual rejections: no cards-on-cards, no icon tiles, no decorative gradients (every gradient in the build is a material: table light, tab sheen, card rules), no browser-frame screenshots, no named severity levels.",
+    "keyCharacteristics": [
+      "One physical scene (table, paper, card, tabs) rather than a layout of panels.",
+      "Two typefaces with strictly separated jobs: Times New Roman for the Document, Archivo for Redline.",
+      "Rank is triply carried: type size, rank color, and an ordinal word.",
+      "Materials with real optics: multiply-blended highlighter, sheened plastic tabs, offset paper shadows.",
+      "One authored motion sequence on load (\"the pull\"), fully disabled under reduced motion.",
+      "Black, not a brand color, is the action."
+    ],
+    "rules": [
+      { "name": "The Rank-Only Rule", "body": "Red-orange, orange and yellow exist to say \"1st, 2nd, 3rd\". They never decorate, never mark a button, never signal success or a link. If it isn't a Flag or its Source Sentence, it isn't a rank color.", "section": "colors" },
+      { "name": "The Word-With-Color Rule", "body": "Rank is never carried by color alone. Every rank color sits beside its ordinal (\"1ST\", \"2ND\", \"3RD\") and, on the open tab, a sentence (\"Ranked 1st of 3 by how badly it can hurt you.\").", "section": "colors" },
+      { "name": "The Black Action Rule", "body": "The one action is ink-black paper-white, never a brand color. Hover deepens it to pure black (#000); it never gets a rank color.", "section": "colors" },
+      { "name": "The Multiply Rule", "body": "Anything that sits on paper as a mark (highlighter, stamp) uses mix-blend-mode: multiply so the type stays fully legible beneath it. Highlighter colors are rank colors at partial alpha, never opaque.", "section": "colors" },
+      { "name": "The Two Voices Rule", "body": "Every Document word, including every Source Sentence wherever it is quoted, is Times New Roman. Every Redline word is Archivo. Nothing is set in both, and no third face is introduced.", "section": "typography" },
+      { "name": "The Compressed Shout Rule", "body": "Uppercase Archivo is always 800 weight and always narrowed (84–90% width); Archivo at normal width is always mixed case and never shouts. The wordmark is the single wide (125%) exception.", "section": "typography" },
+      { "name": "The Size Is Billing Rule", "body": "Rank order is visible in type scale before color is read: the 1st tab's heading is one step larger than the others.", "section": "typography" },
+      { "name": "The Cast Shadow Rule", "body": "A shadow is always the object above darkening the surface below: two layers, straight down, black at partial alpha, blurred. No hard offsets, no colored glows, no shadows as borders.", "section": "elevation" },
+      { "name": "The Spine Rule", "body": "A tab meets the page with a 3px inset spine (dark on colored tabs, light on the black one). That spine is what makes it a tab and not a button.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do set every Document word and every Source Sentence in Times New Roman, justified and hyphenated on desktop, left-aligned at ≤760px (The Two Voices Rule).",
+      "Do carry rank three ways at once: type size, rank color, and the ordinal word (The Word-With-Color Rule, The Size Is Billing Rule).",
+      "Do give every mark on paper mix-blend-mode: multiply and use rank colors at partial alpha (.62 / .70 / .82) for highlighter strokes (The Multiply Rule).",
+      "Do build shadows as two straight-down black layers, one long and diffuse plus one tight contact shadow, scaled to the object's size (The Cast Shadow Rule).",
+      "Do give tabs a 3px inset spine on the page edge and round only the outer edge (7px) (The Spine Rule).",
+      "Do make the action a black tab with paper text; hover to #000 and slide 8px (The Black Action Rule).",
+      "Do keep uppercase Archivo at 800 weight and 84–90% width; keep normal-width Archivo mixed-case (The Compressed Shout Rule).",
+      "Do keep the ruled index card's text on its rules: 28px line height, 14px rule offset, text inset 34px past the 22px margin line.",
+      "Do disable every entrance animation and interaction transition under prefers-reduced-motion: reduce and render the final state.",
+      "Do keep interactive tab bodies in the DOM (collapsed via grid-template-rows), with aria-expanded and aria-controls on the face."
+    ],
+    "donts": [
+      "Don't use a rank color for anything that is not a Flag or its Source Sentence (The Rank-Only Rule).",
+      "Don't name a severity level. Rank is an ordinal (\"1st of 3\") until the product decides level names.",
+      "Don't add cards-on-cards, icon tiles, browser-frame screenshots or feature grids; the desk is the layout.",
+      "Don't add a decorative gradient. Gradients in this world are materials only: the table's light fall, the tab's sheen, the card's ruling.",
+      "Don't use hard-offset, colored, or border-like shadows.",
+      "Don't introduce a third typeface, a display face for Redline copy, or Times New Roman for anything Redline says.",
+      "Don't round the page, the card, or the page-side edge of any tab; the only radii are the tab's outer edge (7px), the stamp (3px) and the scrollbar thumb.",
+      "Don't let protruding tabs create horizontal scroll; the table clips overflow-x."
+    ]
+  }
+}
