@@ -18,7 +18,9 @@ that's a human or an AI agent doing the building.
   built on, including the case against the product as originally conceived.
 - **[GitHub Issues](https://github.com/jcpbacon/redline/issues)** — the spec
   derived from the brief, and the tickets it gets broken into, are tracked here
-  rather than in the repo.
+  rather than in the repo. The spec is [#1](https://github.com/jcpbacon/redline/issues/1);
+  it's broken into tickets [#17](https://github.com/jcpbacon/redline/issues/17)–[#25](https://github.com/jcpbacon/redline/issues/25),
+  in dependency order.
 
 ## How this repo is organized
 
