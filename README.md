@@ -4,9 +4,10 @@ A web app that reads a contract, lease, freelance agreement, or terms of service
 and tells the reader what they are actually signing — with every warning tied to
 the exact sentence it came from.
 
-There's no application code yet. What exists so far is the harness: the research,
-decisions, and vocabulary needed to build this correctly, whether that's a human
-or an AI agent doing the building.
+The application code so far is a minimal Next.js scaffold — enough for a build to
+succeed and deploy, nothing else. What mostly exists is the harness: the
+research, decisions, and vocabulary needed to build this correctly, whether
+that's a human or an AI agent doing the building.
 
 ## Start here
 
@@ -15,6 +16,9 @@ or an AI agent doing the building.
   there.
 - **[`research/summary.md`](./research/summary.md)** — the evidence the brief is
   built on, including the case against the product as originally conceived.
+- **[GitHub Issues](https://github.com/jcpbacon/redline/issues)** — the spec
+  derived from the brief, and the tickets it gets broken into, are tracked here
+  rather than in the repo.
 
 ## How this repo is organized
 
