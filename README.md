@@ -4,10 +4,12 @@ A web app that reads a contract, lease, freelance agreement, or terms of service
 and tells the reader what they are actually signing — with every warning tied to
 the exact sentence it came from.
 
-The application code so far is a minimal Next.js scaffold — enough for a build to
-succeed and deploy, nothing else. What mostly exists is the harness: the
-research, decisions, and vocabulary needed to build this correctly, whether
-that's a human or an AI agent doing the building.
+The application code so far is a landing page, clients for Supabase and
+OpenRouter that read their configuration rather than hardcoding it, and a build
+that refuses to pass on a stale Node version or a critical advisory. No Document
+has been analysed yet. What mostly exists is the harness: the research,
+decisions, and vocabulary needed to build this correctly, whether that's a human
+or an AI agent doing the building.
 
 ## Start here
 
@@ -35,6 +37,8 @@ something already settled.
 | `CONTEXT.md` | The domain glossary — precise definitions for terms like Reader, Document, Flag, Source Sentence, Red Line — so the same word means the same thing in every session. |
 | `docs/adr/` | Architecture Decision Records. One numbered file per decision that's hard to reverse, would be surprising without context, or came from a real trade-off — the decision, the alternatives considered, and why. |
 | `docs/agents/` | Configuration for the engineering skill pack this repo uses (issue tracker, domain-doc, and triage-label conventions) — tells generic skills how to behave specifically in this repo. |
+| `lib/` | Clients for the outside world — Supabase and OpenRouter — each reading its configuration from the environment. Which model to call and whether a Supabase project exists are still the owner's to decide, so neither has a default here. |
+| `scripts/` | Checks the build runs before it will compile: the Node version matches what the repo declares, and no dependency carries a critical advisory. |
 | `research/` | Raw findings from the initial product research, and the synthesis in `summary.md`. |
 | `PRD.md` | The product brief, built from that research plus a structured decision-making session. Cites its sources and marks what's still undecided rather than papering over it. |
 
