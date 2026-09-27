@@ -58,6 +58,11 @@ These are deliberately undecided. Do not resolve them by picking one silently.
   messages, empty states — has to be run through the humanizer skill before it
   is committed. Copy that reads as though a model wrote it is a defect, not a
   matter of taste.
+- Verifying a layout at phone width: headless Chrome will not render a window
+  narrower than 500px. `--window-size=390` lays out at 500 and crops the
+  capture, which looks exactly like a horizontal-overflow bug. Render the page
+  in a 400px `<iframe>`, which gets its own viewport, or the finding is an
+  artifact.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

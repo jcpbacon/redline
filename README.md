@@ -24,6 +24,10 @@ or an AI agent doing the building.
   it's broken into tickets [#17](https://github.com/jcpbacon/redline/issues/17)–[#32](https://github.com/jcpbacon/redline/issues/32)
   (some numbers in between are closed duplicates; each points at its replacement),
   in dependency order.
+- **[The deployed site](https://redline-sable-one.vercel.app/)** — the landing
+  page as it currently stands. Production deploys from `master` on every push.
+  The `*-team-name-467a.vercel.app` hostnames for the same project are gated by
+  Vercel Authentication and 302 to an SSO login, so this is the one to share.
 
 ## How this repo is organized
 
