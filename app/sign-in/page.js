@@ -2,29 +2,29 @@ import Link from "next/link";
 import styles from "../notice.module.css";
 
 /*
- * The landing page's one call to action points here. Accounts are ticket #18;
- * until that lands, this route exists so the action leads somewhere honest
- * instead of a 404. When sign-in is built it replaces this page at the same
- * path, so the link is never dead and never has to move.
+ * Where the landing page's one call to action, "Try it on a document", leads.
+ * Until accounts exist (ticket #18) this route answers the click instead of
+ * 404ing, so the copy speaks to trying it on a document. The path is /sign-in
+ * because that is what #18 puts here; a Reader sees the button label, not the
+ * route, so the heading matches the button rather than the URL.
  */
 
 export const metadata = {
-  title: "Sign in — Redline",
-  description: "Accounts are not built yet.",
+  title: "Not built yet — Redline",
+  description: "Redline cannot read your own document yet.",
 };
 
 export default function SignIn() {
   return (
     <main className={styles.table}>
       <div className={styles.sheet}>
-        <h1 className={styles.heading}>There&rsquo;s no sign-in yet</h1>
+        <h1 className={styles.heading}>You can&rsquo;t try it on a document yet</h1>
         <p className={styles.body}>
-          Accounts don&rsquo;t exist yet. When they do, this is where you&rsquo;ll sign in.
+          Redline can&rsquo;t read your own document yet. That part isn&rsquo;t built.
         </p>
         <p className={styles.body}>
-          Redline can&rsquo;t read your own document yet either. The marked-up agreement on
-          the front page was written by hand, to show what a finished analysis will look
-          like.
+          The marked-up agreement on the front page was written by hand, to show what a
+          finished analysis will look like.
         </p>
         <Link href="/" className={styles.action}>
           Back to the example
