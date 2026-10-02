@@ -3,7 +3,7 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { AUTH_COPY, authErrorMessage, missingFieldMessage } from "../../lib/auth/messages.js";
-import { AFTER_SIGN_IN } from "../../lib/auth/routes.js";
+import { APP_HOME } from "../../lib/auth/routes.js";
 import { createServerSupabase } from "../../lib/supabase/server.js";
 
 /*
@@ -53,7 +53,7 @@ export async function signIn(_previous, formData) {
   }
   if (failure) return { error: authErrorMessage(failure), email };
 
-  redirect(AFTER_SIGN_IN);
+  redirect(APP_HOME);
 }
 
 /**
@@ -94,7 +94,7 @@ export async function signUp(_previous, formData) {
     return { error: AUTH_COPY.emailTaken, email };
   }
 
-  if (data.session) redirect(AFTER_SIGN_IN);
+  if (data.session) redirect(APP_HOME);
   return { checkEmail: true, email };
 }
 

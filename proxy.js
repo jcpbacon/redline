@@ -1,14 +1,19 @@
-import { refreshSession } from "./lib/supabase/proxy.js";
+import { routeForRequest } from "./lib/auth/routes.js";
+import { redirectKeepingSession, refreshSession } from "./lib/supabase/proxy.js";
 
 /*
- * Next 16's proxy (formerly middleware). Its only job is to refresh the
- * Reader's Supabase session cookies; see lib/supabase/proxy.js. With Supabase
- * unconfigured it passes every request through unchanged.
+ * Next 16's proxy (formerly middleware). It refreshes the Reader's Supabase
+ * session cookies (see lib/supabase/proxy.js) and, with the answer that
+ * refresh already got, sends a signed-in Reader who opens `/` to the app home
+ * before the landing page renders (story 55; lib/auth/routes.js). With
+ * Supabase unconfigured it passes every request through unchanged.
  */
 
 /** @param {import("next/server").NextRequest} request */
-export function proxy(request) {
-  return refreshSession(request);
+export async function proxy(request) {
+  const { response, signedIn } = await refreshSession(request);
+  const target = routeForRequest({ pathname: request.nextUrl.pathname, signedIn });
+  return target ? redirectKeepingSession(request, response, target) : response;
 }
 
 export const config = {

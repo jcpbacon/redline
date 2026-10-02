@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { createAnalyzeHandler } from "../../lib/analysis/http.js";
 import { getSupabaseConfig } from "../../lib/supabase/config.js";
 import { getBrowserSupabase } from "../../lib/supabase/browser.js";
-import { refreshSession } from "../../lib/supabase/proxy.js";
+import { proxy } from "../../proxy.js";
 import { createServerSupabase, getReader } from "../../lib/supabase/server.js";
 import { loadSidecar, readFixture, stubFromSidecar } from "../helpers/stub-model.js";
 
@@ -65,8 +65,16 @@ describe("with Supabase unconfigured", () => {
 
   it("lets every request through the proxy untouched", async () => {
     const request = new NextRequest("http://localhost/read", { headers: { cookie: "sb-x-auth-token=stale" } });
-    const response = await refreshSession(request);
+    const response = await proxy(request);
     expect(response.headers.get("x-middleware-next")).toBe("1");
+    expect(response.headers.get("set-cookie")).toBeNull();
+  });
+
+  it("shows the landing page at / even to a request carrying a session cookie", async () => {
+    const request = new NextRequest("http://localhost/", { headers: { cookie: "sb-x-auth-token=stale" } });
+    const response = await proxy(request);
+    expect(response.headers.get("x-middleware-next")).toBe("1");
+    expect(response.headers.get("location")).toBeNull();
     expect(response.headers.get("set-cookie")).toBeNull();
   });
 

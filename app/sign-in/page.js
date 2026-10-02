@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AUTH_COPY } from "../../lib/auth/messages.js";
-import { AFTER_SIGN_IN } from "../../lib/auth/routes.js";
+import { APP_HOME } from "../../lib/auth/routes.js";
 import { getSupabaseConfig } from "../../lib/supabase/config.js";
 import { getReader } from "../../lib/supabase/server.js";
 import AuthForm from "./AuthForm";
@@ -26,7 +26,7 @@ export const metadata = {
 export default async function SignIn({ searchParams }) {
   if (!getSupabaseConfig()) return <AccountsOff />;
 
-  if (await getReader()) redirect(AFTER_SIGN_IN);
+  if (await getReader()) redirect(APP_HOME);
 
   const params = await searchParams;
   const mode = params?.mode === "create" ? "create" : "sign-in";
