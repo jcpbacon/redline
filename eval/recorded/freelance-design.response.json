@@ -1,0 +1,15 @@
+{
+  "id": "recorded-by-hand",
+  "object": "chat.completion",
+  "created": 0,
+  "choices": [
+    {
+      "index": 0,
+      "finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "{\"summary\":\"You design a five-page website for Pellar Home Goods for a fixed price of USD $6,000, invoiced on delivery.\",\"flags\":[{\"clauseType\":\"payment-terms\",\"severity\":\"high\",\"sourceSentence\":\"Client will pay each invoice within one hundred and twenty (120) days of receipt, and Client may set off against any invoice any amount Client believes Designer owes it.\",\"whatItMeans\":\"You wait four months to be paid, and the client can knock off anything it thinks you owe it.\",\"whyDangerous\":\"The client alone decides what to deduct, so you may not get the full price.\",\"counterOffer\":\"Could we change this to: Client will pay each invoice within fifteen (15) days of receipt, in full.\",\"matchedRedLineId\":\"seed-2\"},{\"clauseType\":\"ip-assignment-or-licence-scope\",\"severity\":\"critical\",\"sourceSentence\":\"Designer assigns to Client all rights in the Work Product, including any tools, templates, code libraries and design systems Designer used to create it\",\"whatItMeans\":\"The client owns the website and also the tools and templates you used to build it.\",\"whyDangerous\":\"You lose tools you made before this job and use for other clients.\",\"counterOffer\":\"Could we change this to: Designer assigns to Client all rights in the Work Product, excluding Designer's pre-existing tools, templates, code libraries and design systems.\",\"matchedRedLineId\":\"seed-1\"},{\"clauseType\":\"indemnification\",\"severity\":\"high\",\"sourceSentence\":\"Designer must reimburse Client for all losses from defects, without limit.\",\"whatItMeans\":\"You pay any loss a defect causes the client.\",\"whyDangerous\":\"There is no cap.\",\"counterOffer\":null,\"matchedRedLineId\":\"seed-4\"},{\"clauseType\":\"termination-or-unilateral-amendment\",\"severity\":\"medium\",\"sourceSentence\":\"Either Party may end this Agreement on thirty (30) days' written notice.\",\"whatItMeans\":\"Either side can end the deal with a month's notice.\",\"whyDangerous\":\"The client can walk away partway through the project.\",\"counterOffer\":null,\"matchedRedLineId\":null}]}"
+      }
+    }
+  ]
+}

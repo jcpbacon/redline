@@ -185,7 +185,8 @@ describe("no model id in the repo's code or fixtures", () => {
     });
   }
 
-  const scanned = [...files(join(ROOT, "tests")), ...files(join(ROOT, "lib"))].filter(
+  // eval/ holds recorded model responses, which must not keep the id either.
+  const scanned = ["tests", "lib", "scripts", "eval"].flatMap((dir) => files(join(ROOT, dir))).filter(
     (path) => path !== fileURLToPath(import.meta.url),
   );
 

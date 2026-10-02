@@ -1,0 +1,23 @@
+{
+  "note": "Hand-written labels for a short one-sided design agreement.",
+  "clauses": [
+    {
+      "id": "late-payment-set-off",
+      "clauseType": "payment-terms",
+      "severity": "high",
+      "sourceSentence": "Client will pay each invoice within one hundred and twenty (120) days of receipt, and Client may set off against any invoice any amount Client believes Designer owes it."
+    },
+    {
+      "id": "assigns-own-tools",
+      "clauseType": "ip-assignment-or-licence-scope",
+      "severity": "critical",
+      "sourceSentence": "Designer assigns to Client all rights in the Work Product, including any tools, templates, code libraries and design systems Designer used to create it, whether made before or during this Agreement."
+    },
+    {
+      "id": "uncapped-defect-losses",
+      "clauseType": "indemnification",
+      "severity": "high",
+      "sourceSentence": "Designer will reimburse Client for any losses Client suffers as a result of a defect in the Work Product, with no limit on the amount."
+    }
+  ]
+}

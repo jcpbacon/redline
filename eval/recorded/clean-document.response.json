@@ -1,0 +1,15 @@
+{
+  "id": "recorded-by-hand",
+  "object": "chat.completion",
+  "created": 0,
+  "choices": [
+    {
+      "index": 0,
+      "finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "{\"summary\":\"A creator services agreement with Fernhill Outdoor Supply for one YouTube video and two Instagram Reels. You are paid half up front and half after the last post, you keep ownership of your work, and liability on both sides is capped at the fee.\",\"flags\":[]}"
+      }
+    }
+  ]
+}
