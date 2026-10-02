@@ -13,8 +13,8 @@ import styles from "./read.module.css";
 /*
  * One screen, seven states:
  *
- *   compose   → the Reader pastes the Document, or chooses a PDF
- *   extracting→ the PDF is being read, in the browser, page by page
+ *   compose   → the Reader pastes the Document, or chooses a PDF or Word file
+ *   extracting→ the file is being read, in the browser
  *   confirm   → the text shown exactly as pasted or extracted, before anything is sent
  *   saving    → a signed-in Reader chose to save it; the Server Action runs
  *   analysing → the request is running; elapsed time shows it is alive
@@ -42,13 +42,15 @@ import styles from "./read.module.css";
  * no dismissing on an unsaved reading: it isn't kept, so a dismissal couldn't
  * be either.
  *
- * A PDF (ticket #20) is read on the Reader's machine by lib/extract/pdf.js,
- * loaded only when one is chosen. Its text then takes the same path as pasted
- * text: shown at confirm, then sent or saved only when the Reader says so.
- * The file itself is never sent or kept, and nothing about it is: not its
- * name (the default title comes from the text), size or type. A PDF that
- * looks scanned, can't be opened, or is too long is refused at compose with a
- * message saying what to do instead, and nothing is sent.
+ * A chosen file is read on the Reader's machine by lib/extract/read-file.js,
+ * loaded only when one is chosen. It picks the parser by what the bytes are
+ * (a PDF, ticket #20, or a Word .docx, ticket #28), never by the file's name
+ * or reported type. The text then takes the same path as pasted text: shown
+ * at confirm, then sent or saved only when the Reader says so. The file
+ * itself is never sent or kept, and nothing about it is: not its name (the
+ * default title comes from the text), size or type. A file that looks
+ * scanned, has no text, can't be opened, or is too long is refused at compose
+ * with a message saying what to do instead, and nothing is sent.
  *
  * The length ceiling (lib/documents/ceiling.js) is checked here before any
  * request, for pasted text and PDFs alike; the routes check it again.
@@ -69,6 +71,33 @@ const PDF_COPY = {
   failed: "Redline couldn’t read this PDF. Paste the text instead.",
 };
 
+/** Why a Word file was refused, keyed by ParseError code or outcome (lib/extract/docx.js). */
+const DOCX_COPY = {
+  empty:
+    "This Word file has no text in it for Redline to read. If it’s a picture of the document, Redline won’t guess at the words. Paste the text instead, or choose a PDF with text in it.",
+  "not-docx": "That file isn’t a Word document Redline can open. Choose a .docx or a PDF, or paste the text.",
+  "legacy-doc": "This is an older Word file (.doc). Open it in Word, save it as .docx or PDF and choose that, or paste the text.",
+  corrupt: "This Word file is damaged, so Redline can’t open it. Download it again and choose the new copy, or paste the text.",
+  password:
+    "This Word file is locked with a password. Open it, save a copy without the password and choose that, or paste the text.",
+  failed: "Redline couldn’t read this Word file. Paste the text instead.",
+};
+
+/** A file that is neither a PDF nor a Word file (lib/extract/read-file.js). */
+const UNSUPPORTED_COPY = "Redline can only read PDFs and Word files (.docx). Choose one of those, or paste the document’s text.";
+
+/**
+ * The refusal for a file that couldn't be read.
+ *
+ * @param {"pdf" | "docx" | null} format null when the chooser couldn't tell
+ * @param {string} code a ParseError code, or "" for anything else
+ */
+function refusal(format, code) {
+  if (code === "unsupported") return UNSUPPORTED_COPY;
+  const copy = /** @type {Record<string, string>} */ (format === "docx" ? DOCX_COPY : PDF_COPY);
+  return copy[code] ?? copy.failed;
+}
+
 /** @param {{ canSave?: boolean }} props */
 export default function ReadDocument({ canSave = false }) {
   const router = useRouter();
@@ -79,7 +108,9 @@ export default function ReadDocument({ canSave = false }) {
   const [stage, setStage] = useState(
     /** @type {"compose" | "extracting" | "confirm" | "saving" | "analysing" | "failed" | "done"} */ ("compose"),
   );
-  const [source, setSource] = useState(/** @type {"paste" | "pdf"} */ ("paste"));
+  const [source, setSource] = useState(/** @type {"paste" | "pdf" | "docx"} */ ("paste"));
+  // What the chosen file turned out to be, while it's read.
+  const [format, setFormat] = useState(/** @type {"pdf" | "docx" | null} */ (null));
   const [notice, setNotice] = useState("");
   const [progress, setProgress] = useState(/** @type {{ page: number, pages: number } | null} */ (null));
   const fileId = useId();
@@ -127,36 +158,51 @@ export default function ReadDocument({ canSave = false }) {
   }
 
   /**
-   * Read a chosen PDF here, in the browser. Its text goes to confirm, like
-   * pasted text; a refusal stays on compose and sends nothing.
+   * Read a chosen PDF or Word file here, in the browser. Its text goes to
+   * confirm, like pasted text; a refusal stays on compose and sends nothing.
    *
    * @param {File | undefined} file
    */
-  async function choosePdf(file) {
+  async function chooseFile(file) {
     // Never true when this runs (it's an event handler), but Turbopack reads
     // it at build time and drops the branch below from the server bundle,
-    // so PDF.js never ships in it.
+    // so neither parser (PDF.js, fflate) ever ships in it.
     if (!file || import.meta.env.SSR) return;
     setNotice("");
     setProgress(null);
+    setFormat(null);
     setStage("extracting");
 
-    /** @type {import("../../../lib/extract/pdf.js").PdfOutcome} */
+    /** @type {{ format: "pdf" | "docx" | null }} */
+    const chosen = { format: null };
+    /** @type {Awaited<ReturnType<typeof import("../../../lib/extract/read-file.js").readChosenFile>>} */
     let outcome;
     try {
-      // Loaded on first use, so PDF.js is fetched only when a PDF is chosen.
-      const { readChosenPdf } = await import("../../../lib/extract/read-file.js");
-      outcome = await readChosenPdf(file, { onProgress: (page, pages) => setProgress({ page, pages }) });
+      // Loaded on first use, so a parser is fetched only when a file is
+      // chosen, and only the one that file needs.
+      const { readChosenFile } = await import("../../../lib/extract/read-file.js");
+      outcome = await readChosenFile(file, {
+        onFormat: (f) => {
+          chosen.format = f;
+          setFormat(f);
+        },
+        onProgress: (page, pages) => setProgress({ page, pages }),
+      });
     } catch (err) {
       const code = err && typeof err === "object" && "code" in err ? String(err.code) : "";
-      if (!(code in PDF_COPY)) console.error("Reading the PDF failed:", err);
-      setNotice(PDF_COPY[code] ?? PDF_COPY.failed);
+      if (!code) console.error("Reading the file failed:", err);
+      setNotice(refusal(chosen.format, code));
       setStage("compose");
       return;
     }
 
     if (outcome.kind === "scanned") {
       setNotice(PDF_COPY.scanned);
+      setStage("compose");
+      return;
+    }
+    if (outcome.kind === "empty") {
+      setNotice(DOCX_COPY.empty);
       setStage("compose");
       return;
     }
@@ -168,7 +214,7 @@ export default function ReadDocument({ canSave = false }) {
     }
     // A new Document: one already saved stays in the library.
     setText(outcome.text);
-    setSource("pdf");
+    setSource(outcome.format);
     setDocumentId(null);
     setStage("confirm");
   }
@@ -295,13 +341,13 @@ export default function ReadDocument({ canSave = false }) {
             <p className={styles.lede} id={hintId}>
               {canSave ? (
                 <>
-                  Paste the full text of the agreement, or choose a PDF of it. First you&rsquo;ll see the
+                  Paste the full text of the agreement, or choose a PDF or Word file of it. First you&rsquo;ll see the
                   text exactly as Redline will read it, then you decide whether to save it to your
                   library.
                 </>
               ) : (
                 <>
-                  Paste the full text of the agreement, or choose a PDF of it. First you&rsquo;ll see the
+                  Paste the full text of the agreement, or choose a PDF or Word file of it. First you&rsquo;ll see the
                   text exactly as Redline will read it. Redline doesn&rsquo;t keep a copy.
                 </>
               )}
@@ -316,7 +362,7 @@ export default function ReadDocument({ canSave = false }) {
               value={text}
               onChange={(event) => {
                 setText(event.target.value);
-                // Edited, it's no longer the text exactly as it came out of the PDF.
+                // Edited, it's no longer the text exactly as it came out of the file.
                 setSource("paste");
               }}
               spellCheck={false}
@@ -335,7 +381,8 @@ export default function ReadDocument({ canSave = false }) {
                 <input
                   id={fileId}
                   type="file"
-                  accept="application/pdf,.pdf"
+                  // Only a hint to the file picker: the parser is chosen by the bytes.
+                  accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx"
                   className={styles.fileInput}
                   aria-describedby={`${fileId}-hint`}
                   onChange={(event) => {
@@ -343,16 +390,16 @@ export default function ReadDocument({ canSave = false }) {
                     const file = input.files?.[0];
                     // Clear it so choosing the same file again still fires.
                     input.value = "";
-                    choosePdf(file);
+                    chooseFile(file);
                   }}
                 />
                 <label htmlFor={fileId} className={styles.quiet}>
-                  Choose a PDF instead
+                  Choose a PDF or Word file
                 </label>
               </span>
             </div>
             <p className={styles.hint} id={`${fileId}-hint`}>
-              The PDF is read on this device. Only its text is sent, and only after you&rsquo;ve
+              The file is read on this device. Only its text is sent, and only after you&rsquo;ve
               checked it.
             </p>
           </form>
@@ -369,6 +416,13 @@ export default function ReadDocument({ canSave = false }) {
                       This is the text Redline took from the PDF, exactly as it will read it. Line
                       breaks fall where they do on the page. If anything is missing or garbled, go
                       back and paste the text instead.
+                    </>
+                  ) : source === "docx" ? (
+                    <>
+                      This is the text Redline took from the Word file, exactly as it will read it,
+                      with any tracked changes accepted. Headers, footers, footnotes and text boxes
+                      aren&rsquo;t included. If anything is missing or garbled, go back and paste the
+                      text instead.
                     </>
                   ) : (
                     <>
@@ -429,7 +483,7 @@ export default function ReadDocument({ canSave = false }) {
             {stage === "extracting" ? (
               <div className={styles.progress}>
                 <h1 className={styles.heading} ref={headingRef} tabIndex={-1}>
-                  Reading the PDF
+                  {format === "pdf" ? "Reading the PDF" : format === "docx" ? "Reading the Word file" : "Reading the file"}
                 </h1>
                 <p className={styles.lede} role="status">
                   <span className={styles.pulse} aria-hidden="true" />

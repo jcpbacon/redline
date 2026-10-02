@@ -516,12 +516,11 @@ a.quiet {
   }
 }
 
-/* Why a pasted text or a chosen PDF was refused. Ink, bold: it's the next thing to read. */
+/* Why a pasted text or a chosen file was refused. Full ink and bold against the
+   soft-ink lede: it is the next thing to read. No bar or colour marks it. */
 .notice {
   margin: 0;
   max-width: 62ch;
-  padding-left: 12px;
-  border-left: 3px solid var(--ink);
   font-family: var(--voice);
   font-size: 16px;
   font-weight: 700;
@@ -529,7 +528,7 @@ a.quiet {
   color: var(--ink);
 }
 
-/* "Choose a PDF instead": a file input behind the quiet action's label. */
+/* "Choose a PDF or Word file": a file input behind the quiet action's label. */
 .pick {
   position: relative;
   display: inline-flex;

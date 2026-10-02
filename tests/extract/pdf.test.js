@@ -3,7 +3,7 @@ import { join } from "node:path";
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import { describe, expect, it } from "vitest";
 import { ParseError, extractPdfText, joinPages, linesOf } from "../../lib/extract/pdf.js";
-import { readChosenPdf } from "../../lib/extract/read-file.js";
+import { readChosenFile } from "../../lib/extract/read-file.js";
 import { analyzeRequestBody } from "../../lib/documents/request-body.js";
 import { loadSidecar } from "../helpers/stub-model.js";
 
@@ -129,8 +129,8 @@ describe("what leaves the browser", () => {
   it("returns only the outcome from a chosen file, nothing about the file", async () => {
     const name = "Northwind-confidential-offer.pdf";
     const file = new File([readFileSync(join(dir, "compensation-ip.pdf"))], name, { type: "application/pdf" });
-    const result = await readChosenPdf(file, { pdfjs });
-    expect(Object.keys(result).sort()).toEqual(["kind", "pages", "text"]);
+    const result = await readChosenFile(file, { pdfjs });
+    expect(Object.keys(result).sort()).toEqual(["format", "kind", "pages", "text"]);
     expect(JSON.stringify(result)).not.toContain("Northwind-confidential");
     expect(JSON.stringify(result)).not.toContain("application/pdf");
   });
