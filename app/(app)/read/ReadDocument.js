@@ -3,16 +3,19 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
+import { overCeiling } from "../../../lib/documents/ceiling.js";
 import { defaultTitle } from "../../../lib/documents/title.js";
+import { analyzeRequestBody } from "../../../lib/documents/request-body.js";
 import { saveDocument } from "./actions";
 import ReadingDesk from "./ReadingDesk";
 import styles from "./read.module.css";
 
 /*
- * One screen, six states:
+ * One screen, seven states:
  *
- *   compose   → the Reader pastes the Document
- *   confirm   → the text shown exactly as pasted, before anything is sent
+ *   compose   → the Reader pastes the Document, or chooses a PDF
+ *   extracting→ the PDF is being read, in the browser, page by page
+ *   confirm   → the text shown exactly as pasted or extracted, before anything is sent
  *   saving    → a signed-in Reader chose to save it; the Server Action runs
  *   analysing → the request is running; elapsed time shows it is alive
  *   failed    → a retryable error; Try again repeats whatever failed
@@ -38,11 +41,33 @@ import styles from "./read.module.css";
  * through ./ReadingDesk.js, which also shows each one in the text. There is
  * no dismissing on an unsaved reading: it isn't kept, so a dismissal couldn't
  * be either.
+ *
+ * A PDF (ticket #20) is read on the Reader's machine by lib/extract/pdf.js,
+ * loaded only when one is chosen. Its text then takes the same path as pasted
+ * text: shown at confirm, then sent or saved only when the Reader says so.
+ * The file itself is never sent or kept, and nothing about it is: not its
+ * name (the default title comes from the text), size or type. A PDF that
+ * looks scanned, can't be opened, or is too long is refused at compose with a
+ * message saying what to do instead, and nothing is sent.
+ *
+ * The length ceiling (lib/documents/ceiling.js) is checked here before any
+ * request, for pasted text and PDFs alike; the routes check it again.
  */
 
 const NETWORK_ERROR = "Couldn’t reach Redline. Check your connection and try again. Your text is still here.";
 const FALLBACK_ERROR = "The analysis didn’t finish. Your text is still here, so you can try again.";
 const SAVED_FALLBACK_ERROR = "The analysis didn’t finish. Your document is saved, so you can try again.";
+
+/** Why a PDF was refused, keyed by ParseError code or outcome (lib/extract/pdf.js). */
+const PDF_COPY = {
+  scanned:
+    "This PDF looks like a scan. Its pages are pictures, with no text in them for Redline to read, and Redline won’t guess at words from a picture. If you have the original, save it as a PDF with text, or paste the text in.",
+  "not-pdf": "That file isn’t a PDF. Choose a PDF, or paste the document’s text.",
+  corrupt: "This PDF is damaged, so Redline can’t open it. Download it again and choose the new copy, or paste the text.",
+  password:
+    "This PDF is locked with a password. Open it, save a copy without the password and choose that, or paste the text.",
+  failed: "Redline couldn’t read this PDF. Paste the text instead.",
+};
 
 /** @param {{ canSave?: boolean }} props */
 export default function ReadDocument({ canSave = false }) {
@@ -52,8 +77,13 @@ export default function ReadDocument({ canSave = false }) {
   const [documentId, setDocumentId] = useState(/** @type {string | null} */ (null));
   const [retry, setRetry] = useState(/** @type {"unsaved" | "save" | "saved"} */ ("unsaved"));
   const [stage, setStage] = useState(
-    /** @type {"compose" | "confirm" | "saving" | "analysing" | "failed" | "done"} */ ("compose"),
+    /** @type {"compose" | "extracting" | "confirm" | "saving" | "analysing" | "failed" | "done"} */ ("compose"),
   );
+  const [source, setSource] = useState(/** @type {"paste" | "pdf"} */ ("paste"));
+  const [notice, setNotice] = useState("");
+  const [progress, setProgress] = useState(/** @type {{ page: number, pages: number } | null} */ (null));
+  const fileId = useId();
+  const noticeId = useId();
   const [summary, setSummary] = useState("");
   const [result, setResult] = useState(/** @type {{ flags: any[], checked: Array<{ id: string, label: string }> } | null} */ (null));
   const [error, setError] = useState("");
@@ -84,10 +114,69 @@ export default function ReadDocument({ canSave = false }) {
   // Abandon a running request if the Reader leaves the page.
   useEffect(() => () => inFlight.current?.abort(), []);
 
-  /** Read the pasted text without saving it. */
+  /** Go on to confirm, unless the text is over the length ceiling. */
+  function checkText() {
+    if (!hasText) return;
+    const tooLong = overCeiling(text);
+    if (tooLong) {
+      setNotice(tooLong.error);
+      return;
+    }
+    setNotice("");
+    setStage("confirm");
+  }
+
+  /**
+   * Read a chosen PDF here, in the browser. Its text goes to confirm, like
+   * pasted text; a refusal stays on compose and sends nothing.
+   *
+   * @param {File | undefined} file
+   */
+  async function choosePdf(file) {
+    // Never true when this runs (it's an event handler), but Turbopack reads
+    // it at build time and drops the branch below from the server bundle,
+    // so PDF.js never ships in it.
+    if (!file || import.meta.env.SSR) return;
+    setNotice("");
+    setProgress(null);
+    setStage("extracting");
+
+    /** @type {import("../../../lib/extract/pdf.js").PdfOutcome} */
+    let outcome;
+    try {
+      // Loaded on first use, so PDF.js is fetched only when a PDF is chosen.
+      const { readChosenPdf } = await import("../../../lib/extract/read-file.js");
+      outcome = await readChosenPdf(file, { onProgress: (page, pages) => setProgress({ page, pages }) });
+    } catch (err) {
+      const code = err && typeof err === "object" && "code" in err ? String(err.code) : "";
+      if (!(code in PDF_COPY)) console.error("Reading the PDF failed:", err);
+      setNotice(PDF_COPY[code] ?? PDF_COPY.failed);
+      setStage("compose");
+      return;
+    }
+
+    if (outcome.kind === "scanned") {
+      setNotice(PDF_COPY.scanned);
+      setStage("compose");
+      return;
+    }
+    const tooLong = overCeiling(outcome.text);
+    if (tooLong) {
+      setNotice(tooLong.error);
+      setStage("compose");
+      return;
+    }
+    // A new Document: one already saved stays in the library.
+    setText(outcome.text);
+    setSource("pdf");
+    setDocumentId(null);
+    setStage("confirm");
+  }
+
+  /** Read the text without saving it. */
   async function analyse() {
     setRetry("unsaved");
-    await run("/api/analyze", JSON.stringify({ text }), null);
+    await run("/api/analyze", analyzeRequestBody(text), null);
   }
 
   /** Save the Document, then analyse it by id. */
@@ -182,6 +271,8 @@ export default function ReadDocument({ canSave = false }) {
   function startOver() {
     setText("");
     setTitle("");
+    setSource("paste");
+    setNotice("");
     setDocumentId(null);
     setSummary("");
     setResult(null);
@@ -197,20 +288,21 @@ export default function ReadDocument({ canSave = false }) {
             className={styles.stack}
             onSubmit={(event) => {
               event.preventDefault();
-              if (hasText) setStage("confirm");
+              checkText();
             }}
           >
             <h1 className={styles.heading}>Paste the document</h1>
             <p className={styles.lede} id={hintId}>
               {canSave ? (
                 <>
-                  Paste the full text of the agreement. You&rsquo;ll see it exactly as pasted before
-                  it&rsquo;s read, and you decide whether to save it to your library.
+                  Paste the full text of the agreement, or choose a PDF of it. First you&rsquo;ll see the
+                  text exactly as Redline will read it, then you decide whether to save it to your
+                  library.
                 </>
               ) : (
                 <>
-                  Paste the full text of the agreement. You&rsquo;ll see it exactly as pasted before
-                  it&rsquo;s read, and Redline doesn&rsquo;t keep a copy.
+                  Paste the full text of the agreement, or choose a PDF of it. First you&rsquo;ll see the
+                  text exactly as Redline will read it. Redline doesn&rsquo;t keep a copy.
                 </>
               )}
             </p>
@@ -220,17 +312,49 @@ export default function ReadDocument({ canSave = false }) {
             <textarea
               id={textareaId}
               className={styles.textarea}
-              aria-describedby={hintId}
+              aria-describedby={notice ? `${hintId} ${noticeId}` : hintId}
               value={text}
-              onChange={(event) => setText(event.target.value)}
+              onChange={(event) => {
+                setText(event.target.value);
+                // Edited, it's no longer the text exactly as it came out of the PDF.
+                setSource("paste");
+              }}
               spellCheck={false}
               rows={16}
             />
+            {notice ? (
+              <p className={styles.notice} id={noticeId} role="alert">
+                {notice}
+              </p>
+            ) : null}
             <div className={styles.actions}>
               <button type="submit" className={styles.action} disabled={!hasText}>
                 Check the text
               </button>
+              <span className={styles.pick}>
+                <input
+                  id={fileId}
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  className={styles.fileInput}
+                  aria-describedby={`${fileId}-hint`}
+                  onChange={(event) => {
+                    const input = event.currentTarget;
+                    const file = input.files?.[0];
+                    // Clear it so choosing the same file again still fires.
+                    input.value = "";
+                    choosePdf(file);
+                  }}
+                />
+                <label htmlFor={fileId} className={styles.quiet}>
+                  Choose a PDF instead
+                </label>
+              </span>
             </div>
+            <p className={styles.hint} id={`${fileId}-hint`}>
+              The PDF is read on this device. Only its text is sent, and only after you&rsquo;ve
+              checked it.
+            </p>
           </form>
         ) : (
           <div className={styles.stack}>
@@ -240,8 +364,18 @@ export default function ReadDocument({ canSave = false }) {
                   Is this everything?
                 </h1>
                 <p className={styles.lede}>
-                  This is exactly what Redline will read. If anything is cut off or missing, go back
-                  and paste it again.
+                  {source === "pdf" ? (
+                    <>
+                      This is the text Redline took from the PDF, exactly as it will read it. Line
+                      breaks fall where they do on the page. If anything is missing or garbled, go
+                      back and paste the text instead.
+                    </>
+                  ) : (
+                    <>
+                      This is exactly what Redline will read. If anything is cut off or missing, go
+                      back and paste it again.
+                    </>
+                  )}
                 </p>
                 {canSave ? (
                   <form
@@ -290,6 +424,20 @@ export default function ReadDocument({ canSave = false }) {
                   </div>
                 )}
               </>
+            ) : null}
+
+            {stage === "extracting" ? (
+              <div className={styles.progress}>
+                <h1 className={styles.heading} ref={headingRef} tabIndex={-1}>
+                  Reading the PDF
+                </h1>
+                <p className={styles.lede} role="status">
+                  <span className={styles.pulse} aria-hidden="true" />
+                  {progress
+                    ? `Page ${progress.page} of ${progress.pages}. This happens on your device, and nothing is sent yet.`
+                    : "This happens on your device, and nothing is sent yet."}
+                </p>
+              </div>
             ) : null}
 
             {stage === "saving" ? (
@@ -371,7 +519,7 @@ export default function ReadDocument({ canSave = false }) {
               </>
             ) : null}
 
-            {stage === "done" && result ? null : (
+            {(stage === "done" && result) || stage === "extracting" ? null : (
               <>
                 <h2 className={styles.label}>The document</h2>
                 <div
