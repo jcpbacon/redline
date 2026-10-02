@@ -191,16 +191,35 @@ the Fireworks provider pinned, on `tests/fixtures/adhesion-contract.txt`:
 - **Severity disagreed with the fixture.** Got 6 critical, 1 high and 1 medium;
   the sidecar expects 1 critical, 3 high and 4 medium. Termination, payment,
   morality and indemnification all came back critical.
-- **Every Flag matched a seed Red Line.** That raises a question I could not
-  settle without more live calls: **are Red Lines pushing severity up?**
-  - ADR-0003 says a Red Line must never move a Flag into a severity it didn't
-    earn. Ranking enforces that, but severity is assigned by the model, and the
-    prompt only forbids *lowering* it.
-  - The deterministic tests prove the same Flags come out with or without Red
-    Lines. They can't prove the model grades severity the same both ways.
-  - Suggested check: run the analysis on this fixture with and without Red Lines
-    and compare severities. If they differ, add "Red Lines never raise or lower
-    severity" to the prompt and an eval that compares the two runs.
+- **Follow-up (after the build, with your go-ahead): Red Lines are not the cause.**
+  I ran the same contract 4 more times, twice with the 7 seed Red Lines and twice
+  with none:
+
+  | Run | critical | high | medium | dropped |
+  |---|---|---|---|---|
+  | with Red Lines | 5 | 2 | 1 | 0 |
+  | without | 5 | 2 | 1 | 0 |
+  | with Red Lines | 3 | 4 | 1 | 0 |
+  | without | 6 | 1 | 1 | 0 |
+  | *fixture expects* | *1* | *3* | *4* | |
+
+  So ADR-0003 looks safe here: removing Red Lines doesn't lower severity. The
+  real findings are:
+  - The model rates severity well above PRD §5's bands.
+  - The rating is unstable from run to run. The same input gave 3 critical
+    once and 6 another time.
+
+  Both trace to the open severity-scale decision (issue #1): the prompt names
+  critical/high/medium but nothing defines what separates them. Severity drives
+  ranking, so until the scale is defined the order of the top Flags will shift
+  between runs.
+  - **Next step (yours):** define each level, e.g. by PRD §5's three tests
+    (hard to reverse; cost exceeds the deal; moves a right the Reader doesn't
+    know they hold). Those definitions go into the analysis prompt
+    (`lib/analysis/index.js`) and `severity.js`. Then add a severity-agreement
+    number to the eval.
+  - Citation verification held in every run: 40 Flags returned across the 5 live
+    runs, 0 dropped, all 8 planted clauses found each time.
 - The raw response was recorded (without a model id) in the session scratchpad,
   not the repo.
 
@@ -237,8 +256,9 @@ npm run dev           # then open /read and paste tests/fixtures/adhesion-contra
 
 Then, in this order:
 
-1. **Settle the severity question** in "Real-model smoke run" above. It is the
-   one result here that might touch a hard guarantee (ADR-0003).
+1. **Define the severity scale** (see "Real-model smoke run"). Without it the
+   model over-rates and ranking order shifts between runs. Red Lines were ruled
+   out as the cause.
 2. **Create the Supabase project** and apply `supabase/migrations/` in filename
    order (0100 to 0800). Then set these in `.env.local`:
    - `NEXT_PUBLIC_SUPABASE_URL`
