@@ -378,11 +378,11 @@ a.quiet {
   list-style: none;
 }
 
-/* A Source Sentence, in the contract's own face (The Two Voices Rule). */
+/* A Source Sentence, set as the contract's own words on the card's rules (The
+   Two Voices Rule). The Times face is what sets it apart from the answer; no
+   bar, no box, the same way a Flag's Source Sentence is set. */
 .qaSentence {
   margin: 0;
-  padding-left: 12px;
-  border-left: 2px solid var(--ink);
   font-family: var(--contract);
   font-size: 15.5px;
   line-height: 28px;

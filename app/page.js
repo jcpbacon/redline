@@ -73,6 +73,10 @@ export default function HomePage() {
           Read the contract before you sign it. Every warning points at the
           sentence it came from.
         </p>
+        <p className={styles.cardNote}>
+          Redline&rsquo;s analysis is <span className={styles.nowrap}>AI-generated</span> and
+          isn&rsquo;t legal advice.
+        </p>
       </aside>
 
       <section className={styles.desk} aria-label="A sample agreement with its flags">

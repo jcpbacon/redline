@@ -61,6 +61,21 @@
   text-wrap: balance;
 }
 
+/* The not-legal-advice line, read before the action: on the card's rules,
+   under the hook, in the same voice. */
+.cardNote {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 28px;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
 /* ---------- the paper ---------- */
 
 .desk {

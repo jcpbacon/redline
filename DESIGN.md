@@ -296,7 +296,7 @@ The one action, as a black tab at the paper's lower-right edge and again at the 
 - **Primary:** ink fill, paper text, Action type (800 / 20px / 88% width / uppercase); padding 18/26/19/26 on the paper edge, 18/28/19 on the sheet.
 - **Hover:** background to `#000`, slides 8px right (320ms). **Active:** 4px right.
 - **Motion:** the paper-edge instance slides in at 1900ms, after the last tab. The sheet instance does not animate.
-- No secondary, ghost or tertiary button exists in the build.
+- No secondary or ghost button exists. Anything less than the one action is a Text Link (below).
 
 ### Index Card
 A ruled white card on the table carrying the wordmark and the one-line hook.
@@ -328,10 +328,25 @@ A full-width plain paper band under the table for statements.
 ### Motion (system-wide)
 One authored load sequence, "the pull": card and paper settle (700 / 900ms, `cubic-bezier(0.16, 1, 0.3, 1)`), strokes draw in rank order (200 / 480 / 760ms, 620ms each, `cubic-bezier(0.22, 1, 0.36, 1)`), tabs slide in (1400 / 1560 / 1720ms, 560ms each), the action follows at 1900ms. All entrance animations use `backwards`/`both` fill so nothing flashes at rest position first. Interaction transitions are 320ms for slides, 360ms for the body reveal, 260ms for stroke dimming, 160ms for color. Under `prefers-reduced-motion: reduce` every animation and transition on card, paper, mark, tab, body and action is removed; everything renders in its final state and the tab opens instantly.
 
-**Carry-over guidance (not built).** The app-shell brief intends the same world in Operate mode: the teal field recedes to a border and gutters, paper owns the working area, tabs become the Flag list's own component, inputs are ruled lines on paper, buttons are black tabs, the question box is a ruled index card. None of that exists in code; treat it as direction, and document it only once it ships.
+### Ruled Input
+An input is a line on paper, not a box.
+- **Single line** (email, a Red Line, a Document's name): no fill, no side or top border, one 1px ink rule underneath; Archivo 18px. An invalid field thickens the rule to 2px. Its label sits above it in the Label style (800, 13px, 90% width, uppercase).
+- **Paste box:** ink rules top and bottom, card-rule blue lines every line-height between them, the text in Times (it is the Document's own words, so The Two Voices Rule applies before the Reader has even sent it).
+- **Focus:** an ink outline drawn clear of the rule (2px offset 4px on sign-in, the global 3px ring elsewhere).
+
+### Text Link
+Every action that is not the one action is an underlined word in Redline's voice.
+- **Quiet action** ("Choose a PDF or Word file", "Show it in the document"): Archivo 14–16px, ink, underline 1.5px thick at a 3px offset; hover thickens it to 2.5px.
+- **Tool** (Edit, Rename, Delete this document): the same underline on a 12px Label-style word (800, 90% width, uppercase, 0.06em) in soft ink, ink on hover.
+- **Danger:** Delete is a Tool like any other. Its danger is carried by the word and by a confirm step that names what will be lost, never by a colour; it never takes a rank colour (The Rank-Only Rule).
+
+### Notice
+A status or error line (a failed sign-in, a Document deleted, a refusal) is bold ink text in Redline's voice: Archivo 15–16px at 700, no box, no fill, no rule beside it. Where a notice needs a name, it gets a small black condensed-caps label in front of it, set like the Red Line mark on a Flag (800, 12px, 90% width, uppercase, paper on ink, rounded on the outer edge only).
+
+A Source Sentence quoted in an answer is not a notice: it is the contract's words, set in Times on the question card's rules under a "From the document" label, with no bar, the same way a Flag's Source Sentence is set.
 
 ### Not built
-No inputs, fields, navigation, chips or dialogs exist yet. Do not infer their styling from this file; the brief above gives the intended direction, and the first built instance should be documented here when it lands.
+No navigation menus, chips or dialogs exist yet. Do not infer their styling from this file; document the first built instance here when it lands.
 
 ## Do's and Don'ts
 
@@ -356,3 +371,4 @@ No inputs, fields, navigation, chips or dialogs exist yet. Do not infer their st
 - **Don't** introduce a third typeface, a display face for Redline copy, or Times New Roman for anything Redline says.
 - **Don't** round the page, the card, or the page-side edge of any tab; the only radii are the tab's outer edge (7px), the stamp (3px) and the scrollbar thumb.
 - **Don't** let protruding tabs create horizontal scroll; the table clips overflow-x.
+- **Don't** put a side-stripe border on a box or a notice. No side-stripe borders on boxes or notices; a status is said in bold words, and a quotation is set in its own face.

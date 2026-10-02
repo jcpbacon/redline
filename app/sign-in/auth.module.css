@@ -67,10 +67,8 @@
 
 .error {
   margin: 0;
-  padding-left: 12px;
-  border-left: 3px solid var(--ink);
   font-family: var(--voice);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 16px;
   line-height: 1.45;
   color: var(--ink);
