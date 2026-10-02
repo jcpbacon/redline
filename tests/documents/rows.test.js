@@ -100,6 +100,7 @@ describe("analysisFromRecord", () => {
       checked: checkedClauseTypes(),
       flags: ranked,
       clean: false,
+      redLines: RED_LINES,
     });
   });
 

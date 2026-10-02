@@ -11,8 +11,9 @@
 
 .rule {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 28px;
+  gap: 0 28px;
   min-height: 44px;
   padding: 0 clamp(16px, 4vw, 40px);
   background: var(--ink);
@@ -97,11 +98,24 @@
 
 @media (max-width: 560px) {
   .rule {
-    gap: 18px;
+    gap: 0 18px;
   }
 
   .who {
     display: none;
+  }
+}
+
+/* A signed-in Reader has three routes, which don't fit on one line beside
+   the wordmark and Sign out on a phone. They move to a second line of the
+   rule, under the wordmark; Sign out stays on the first. 760px is the
+   layout's own phone breakpoint (DESIGN.md), and below it the email and all
+   three routes don't fit on one line. */
+@media (max-width: 760px) {
+  .nav[data-routes="3"] {
+    order: 3;
+    flex-basis: 100%;
+    margin-top: -8px;
   }
 }
 

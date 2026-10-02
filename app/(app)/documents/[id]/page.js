@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { analysisFromRecord } from "../../../../lib/documents/rows.js";
 import { readerStore } from "../../../../lib/documents/session.js";
+import { readerRedLines } from "../../../../lib/red-lines/index.js";
 import Notice, { AccountsOff, SignInFirst } from "../../Notice";
 import DocumentView from "./DocumentView";
 
@@ -15,6 +16,10 @@ import DocumentView from "./DocumentView";
  * A Document that isn't this Reader's is not found: row-level security
  * returns nothing for it, exactly as for an id that never existed, so the
  * answer never says whether it exists.
+ *
+ * The Reader's current Red Lines are loaded too, so the page can say which
+ * Red Lines the shown analysis used (its snapshot) and whether they have
+ * changed since, which is the Reader's cue to read it again.
  *
  * A stored Flag whose Source Sentence isn't in the stored text makes
  * analysisFromRecord throw rather than render it (ADR-0001).
@@ -38,9 +43,11 @@ export default async function DocumentPage({ params }) {
 
   let document;
   let record;
+  let redLines = [];
   try {
     document = await session.store.getDocument(id);
     record = document ? await session.store.latestAnalysis(document.id) : null;
+    if (document) redLines = await readerRedLines(session.store);
   } catch (error) {
     console.error("Couldn't load a Document:", error);
     return (
@@ -52,5 +59,5 @@ export default async function DocumentPage({ params }) {
   if (!document) notFound();
 
   const analysis = analysisFromRecord(record, document.text);
-  return <DocumentView document={document} analysis={analysis} />;
+  return <DocumentView document={document} analysis={analysis} redLines={redLines} />;
 }

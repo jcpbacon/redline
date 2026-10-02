@@ -34,7 +34,7 @@ export function ordinal(n) {
 
 /**
  * @param {{
- *   flags: Array<{ severity: string, clauseType: string, sourceSentence: string, whatItMeans: string, whyDangerous: string, counterOffer: string | null, redLine: { id: string, text: string } | null }>,
+ *   flags: Array<{ severity: string, clauseType: string, sourceSentence: string, whatItMeans: string, whyDangerous: string, counterOffer: string | null, redLine: { id: string | null, text: string } | null }>,
  *   checked: Array<{ id: string, label: string }>,
  *   headingId: string,
  * }} props

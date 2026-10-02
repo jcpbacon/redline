@@ -8,9 +8,8 @@ import styles from "./app.module.css";
 /*
  * The app shell (.impeccable/surfaces/app-app-layout-js.md): a thin black rule
  * along the top edge of the desk, the wordmark at its left and the app's
- * routes beside it. It links only to routes that exist: the library appears
- * for a signed-in Reader (./ReaderNav.js); Red Lines join when ticket #22
- * builds them.
+ * routes beside it. The library and Red Lines appear for a signed-in Reader
+ * (./ReaderNav.js).
  *
  * Nothing here needs an account or Supabase: a Reader who is not signed in can
  * still read a pasted Document. The account control at the right end of the

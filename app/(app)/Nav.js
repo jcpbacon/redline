@@ -8,18 +8,19 @@ import styles from "./app.module.css";
 // the wordmark, both routes and the account control on one line.
 const READ = { href: "/read", label: "Read a document", short: "Read" };
 const LIBRARY = { href: "/library", label: "Library", short: null };
+const RED_LINES = { href: "/red-lines", label: "Red lines", short: null };
 
 /**
- * The app's routes along the top rule. The library is listed only for a
- * signed-in Reader; ./ReaderNav.js decides which.
+ * The app's routes along the top rule. The library and Red Lines are listed
+ * only for a signed-in Reader; ./ReaderNav.js decides which.
  *
  * @param {{ signedIn?: boolean }} props
  */
 export default function Nav({ signedIn = false }) {
   const pathname = usePathname();
-  const routes = signedIn ? [READ, LIBRARY] : [READ];
+  const routes = signedIn ? [READ, LIBRARY, RED_LINES] : [READ];
   return (
-    <nav aria-label="Redline" className={styles.nav}>
+    <nav aria-label="Redline" className={styles.nav} data-routes={routes.length}>
       {routes.map((route) => (
         <Link
           key={route.href}

@@ -93,15 +93,36 @@ export const DEFAULT_SUMMARY =
 /**
  * The analysis payload for the sidecar: a summary plus one flag per planted
  * clause. `extraFlags` are appended as given; `only` keeps just the listed
- * sidecar ids.
+ * sidecar ids. `matches` maps a sidecar id to the Red Line id the model
+ * claims that clause breaks (its matchedRedLineId); every other flag claims
+ * none.
  *
- * @typedef {{ summary?: string, extraFlags?: object[], only?: string[] }} SidecarOptions
+ * @typedef {{ summary?: string, extraFlags?: object[], only?: string[], matches?: Record<string, string> }} SidecarOptions
  * @param {{ flags: Array<Record<string, string>> }} sidecar
  * @param {SidecarOptions} [options]
  */
-export function analysisFromSidecar(sidecar, { summary = DEFAULT_SUMMARY, extraFlags = [], only } = {}) {
+export function analysisFromSidecar(sidecar, { summary = DEFAULT_SUMMARY, extraFlags = [], only, matches = {} } = {}) {
   const entries = only ? sidecar.flags.filter((f) => only.includes(f.id)) : sidecar.flags;
-  return { summary, flags: [...entries.map(flagPayload), ...extraFlags] };
+  const flags = entries.map((entry) => ({ ...flagPayload(entry), matchedRedLineId: matches[entry.id] ?? null }));
+  return { summary, flags: [...flags, ...extraFlags] };
+}
+
+/**
+ * A model that flags a planted clause only when its sentence is in what it
+ * was sent, so the same stub answers differently for the adhesion contract
+ * (every planted clause) and the clean fixture (none). `matches` as for
+ * analysisFromSidecar. It looks only for the sidecar's sentences in the
+ * messages; it doesn't read or depend on the prompt's wording.
+ *
+ * @param {{ flags: Array<Record<string, string>> }} sidecar
+ * @param {SidecarOptions} [options]
+ */
+export function stubReadingDocument(sidecar, options = {}) {
+  return createStubModel((messages) => {
+    const sent = messages.map((m) => String(m.content)).join(" ");
+    const present = sidecar.flags.filter((f) => sent.includes(f.sourceSentence)).map((f) => f.id);
+    return analysisFromSidecar(sidecar, { ...options, only: present });
+  });
 }
 
 /**

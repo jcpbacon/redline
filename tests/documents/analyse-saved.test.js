@@ -102,7 +102,9 @@ describe("analyseSavedDocument", () => {
     expect(stored?.checked).toEqual(result?.checked);
 
     const { rows } = await db.query("select model_id, red_lines_snapshot from analyses where id = $1", [result?.analysisId]);
-    expect(rows[0]).toEqual({ model_id: "stub-model-client", red_lines_snapshot: [] });
+    // A new Reader's first run is seeded, and the snapshot is what was used.
+    expect(rows[0]).toEqual({ model_id: "stub-model-client", red_lines_snapshot: await storeA.listRedLines() });
+    expect(result?.redLines).toEqual(await storeA.listRedLines());
 
     const entry = (await storeA.listLibrary()).find((e) => e.id === id);
     expect(entry?.analysedAt).not.toBeNull();

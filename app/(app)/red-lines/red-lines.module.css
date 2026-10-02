@@ -1,0 +1,169 @@
+/*
+ * /red-lines: a ruled index card on the page (DESIGN.md, Index Card). Every
+ * line of text rests on a 28px rule; the red margin line sits 22px in and the
+ * text starts at 34px. Edit and Delete are underlined words, not buttons:
+ * the one black action on the card is Add it.
+ */
+
+.card {
+  padding: 14px 20px 22px 34px;
+  background:
+    linear-gradient(90deg, transparent 22px, var(--card-margin) 22px, var(--card-margin) 23px, transparent 23px),
+    repeating-linear-gradient(180deg, transparent 0 27px, var(--card-rule) 27px 28px),
+    var(--paper);
+  background-position: 0 0, 0 14px, 0 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 14px 28px -10px rgba(0, 0, 0, 0.3),
+    0 2px 5px rgba(0, 0, 0, 0.12);
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0 18px;
+  font-family: var(--voice);
+  font-size: 17px;
+  line-height: 28px;
+}
+
+.text {
+  flex: 1 1 16rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.controls {
+  display: inline-flex;
+  gap: 16px;
+  flex: 0 0 auto;
+}
+
+.control {
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--voice);
+  font-weight: 800;
+  font-stretch: 90%;
+  font-size: 12px;
+  line-height: 28px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.control:hover:not(:disabled) {
+  color: var(--ink);
+}
+
+.control:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 18px;
+  width: 100%;
+}
+
+/* An input is a ruled line: the text sits on the card's own rule. */
+.input {
+  flex: 1 1 16rem;
+  min-width: 0;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--voice);
+  font-size: 17px;
+  line-height: 27px;
+  color: var(--ink);
+}
+
+.input::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+.input:focus-visible {
+  outline-offset: 3px;
+}
+
+.add {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 28px;
+}
+
+.addLabel {
+  font-family: var(--voice);
+  font-weight: 800;
+  font-stretch: 90%;
+  font-size: 13px;
+  line-height: 28px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.add .input {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.add > :last-child {
+  margin-top: 22px;
+}
+
+.empty {
+  margin: 0;
+  font-family: var(--voice);
+  font-size: 17px;
+  line-height: 28px;
+  color: var(--ink-soft);
+}
+
+.error {
+  margin: 0;
+  font-family: var(--voice);
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--ink);
+  border-left: 3px solid var(--ink);
+  padding-left: 12px;
+}
+
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .item,
+  .input,
+  .empty {
+    font-size: 16px;
+  }
+}

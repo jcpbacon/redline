@@ -26,12 +26,17 @@ export default function Notice({ heading, children, href, action }) {
   );
 }
 
-/** The two notices both account screens share. */
-export function AccountsOff() {
+/**
+ * The two notices every account screen shares. `what` says what has nowhere
+ * to live without accounts; it defaults to the library's wording.
+ *
+ * @param {{ what?: string }} props
+ */
+export function AccountsOff({ what = "there’s no library to keep documents in" }) {
   return (
     <Notice heading="Accounts aren’t switched on here" href="/read" action="Paste a document">
-      This version of Redline has no sign-in, so there&rsquo;s no library to keep documents in. You
-      can still paste a document and read what it says.
+      This version of Redline has no sign-in, so {what}. You can still paste a document and read
+      what it says.
     </Notice>
   );
 }

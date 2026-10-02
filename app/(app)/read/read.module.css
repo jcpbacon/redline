@@ -271,6 +271,24 @@
   color: var(--ink-soft);
 }
 
+/* The Red Lines an analysis used, listed on a saved Document's page. */
+.usedRedLines {
+  margin: -6px 0 0;
+  padding-left: 1.1em;
+  font-family: var(--voice);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+/* A link inside running text. */
+.inline {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
 /* A link styled as the quiet action. */
 a.quiet {
   display: inline-block;

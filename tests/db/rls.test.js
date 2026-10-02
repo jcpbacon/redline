@@ -74,7 +74,8 @@ describe("the schema", () => {
     const { rows } = await db.query(
       "select relname, relrowsecurity from pg_class where relnamespace = 'public'::regnamespace and relkind = 'r' order by relname",
     );
-    expect(rows.map((r) => r.relname).sort()).toEqual([...TABLES].sort());
+    // red_line_seeds is keyed by Reader, not by id; tests/db/red-lines.test.js covers its isolation.
+    expect(rows.map((r) => r.relname).sort()).toEqual([...TABLES, "red_line_seeds"].sort());
     for (const row of rows) expect(row.relrowsecurity, row.relname).toBe(true);
   });
 

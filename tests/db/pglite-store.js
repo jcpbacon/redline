@@ -4,8 +4,9 @@ import { as } from "./supabase-shim.js";
  * lib/documents/store.js's interface over the PGlite database, as one Reader.
  *
  * This is not a fake: every method runs the same SQL objects the Supabase
- * store reaches through PostgREST — the documents table, the library_entries
- * view, and the save_analysis / latest_analysis functions from
+ * store reaches through PostgREST — the documents and red_lines tables, the
+ * library_entries view, and the save_analysis / latest_analysis /
+ * seed_red_lines functions from
  * supabase/migrations/ — as the `authenticated` role with the Reader's JWT
  * claims, so row-level security decides every result. Only the transport
  * differs: PostgREST turns `.from(...).select(...)` and `.rpc(...)` into
@@ -81,6 +82,50 @@ export function createPgliteStore(db, readerId) {
           [documentId, summary, modelId, JSON.stringify(redLinesSnapshot), JSON.stringify(checked), JSON.stringify(flags)],
         );
         return { id: /** @type {any} */ (rows[0]).id };
+      });
+    },
+
+    async listRedLines() {
+      return run(async (tx) => {
+        const { rows } = await tx.query(
+          "select id, text from public.red_lines where archived_at is null order by created_at asc, id asc",
+        );
+        return rows.map((/** @type {any} */ row) => ({ id: row.id, text: row.text }));
+      });
+    },
+
+    async addRedLine(text) {
+      return run(async (tx) => {
+        const { rows } = await tx.query("insert into public.red_lines (text) values ($1) returning id, text", [text]);
+        const row = /** @type {any} */ (rows[0]);
+        return { id: row.id, text: row.text };
+      });
+    },
+
+    async updateRedLine(id, text) {
+      if (!UUID.test(id)) return null;
+      return run(async (tx) => {
+        const { rows } = await tx.query(
+          "update public.red_lines set text = $2 where id = $1 and archived_at is null returning id, text",
+          [id, text],
+        );
+        const row = /** @type {any} */ (rows[0]);
+        return row ? { id: row.id, text: row.text } : null;
+      });
+    },
+
+    async deleteRedLine(id) {
+      if (!UUID.test(id)) return false;
+      return run(async (tx) => {
+        const { rows } = await tx.query("delete from public.red_lines where id = $1 returning id", [id]);
+        return rows.length > 0;
+      });
+    },
+
+    async seedRedLines(texts) {
+      return run(async (tx) => {
+        const { rows } = await tx.query("select public.seed_red_lines($1::text[]) as seeded", [[...texts]]);
+        return /** @type {any} */ (rows[0]).seeded === true;
       });
     },
   };
