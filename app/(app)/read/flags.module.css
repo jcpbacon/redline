@@ -1,0 +1,225 @@
+/*
+ * The ranked Flags as index tabs in flow (DESIGN.md, Index Tab and
+ * Highlighter Mark). Until a tab can sit beside its sentence on the page
+ * (#23), every tab stacks under the summary and pokes past the paper's right
+ * edge, the way the landing page lays tabs out at phone width. The shell
+ * clips overflow-x, so the overhang never scrolls.
+ */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.sectionHeading {
+  margin: 0;
+  font-family: var(--voice);
+  font-weight: 800;
+  font-stretch: 86%;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.lede {
+  margin: 0;
+  max-width: 62ch;
+  font-family: var(--voice);
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- the tab ---------- */
+
+.tab {
+  --tab: var(--rank-3);
+  --stroke: rgba(255, 230, 59, 0.82);
+  /* past the paper's 56px padding, then 22px over its edge */
+  width: calc(100% + 78px);
+  margin-right: -78px;
+  font-family: var(--voice);
+  color: var(--ink);
+}
+
+.tab[data-band="1"] {
+  --tab: var(--rank-1);
+  --stroke: rgba(255, 90, 54, 0.62);
+}
+
+.tab[data-band="2"] {
+  --tab: var(--rank-2);
+  --stroke: rgba(255, 154, 60, 0.7);
+}
+
+.tab[data-band="3"] {
+  --tab: var(--rank-3);
+  --stroke: rgba(255, 230, 59, 0.82);
+}
+
+/* The clean verdict: a single white tab. White is not a rank colour. */
+.tab[data-band="clean"] {
+  --tab: var(--paper);
+}
+
+.face {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  align-items: baseline;
+  margin: 0;
+  padding: 12px 16px 13px 22px;
+  border-radius: 0 7px 0 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 46%, rgba(0, 0, 0, 0.06)),
+    var(--tab);
+  box-shadow:
+    0 10px 18px -8px rgba(0, 0, 0, 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    inset 3px 0 0 rgba(0, 0, 0, 0.14);
+}
+
+.tab[data-band="clean"] .face {
+  grid-template-columns: 1fr;
+}
+
+.rank {
+  font-weight: 800;
+  font-stretch: 90%;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.heading {
+  font-weight: 800;
+  font-stretch: 84%;
+  font-size: 19px;
+  line-height: 1.02;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+/* Size is billing: the 1st tab's heading is one step larger. */
+.tab[data-first] .heading {
+  font-size: 24px;
+}
+
+.body {
+  position: relative;
+  padding: 14px 16px 16px 22px;
+  border-radius: 0 0 7px 0;
+  background: var(--paper);
+  box-shadow:
+    0 10px 18px -8px rgba(0, 0, 0, 0.5),
+    inset 3px 0 0 rgba(0, 0, 0, 0.08);
+}
+
+.meta {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.redLine {
+  margin: 8px 0 0;
+  padding-left: 10px;
+  border-left: 3px solid var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.label {
+  margin: 16px 0 4px;
+  font-weight: 800;
+  font-stretch: 90%;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.text {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.tab[data-band="clean"] .text {
+  margin-bottom: 8px;
+}
+
+/* The Source Sentence, in the contract's own face (The Two Voices Rule). */
+.sentence {
+  margin: 0;
+  max-width: 66ch;
+  font-family: var(--contract);
+  font-size: 16.5px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Highlighter Mark: translucent stroke in the Flag's band, multiplied. */
+.mark {
+  color: inherit;
+  background-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--stroke) 2.5%,
+    var(--stroke) 97.5%,
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding: 0.08em 0.34em 0.06em 0.26em;
+  margin: 0 -0.22em 0 -0.18em;
+  border-radius: 0.9em 0.25em 0.7em 0.2em / 0.5em 0.3em 0.45em 0.25em;
+  mix-blend-mode: multiply;
+}
+
+.checked {
+  margin: 0 0 10px;
+  padding-left: 1.2em;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .sectionHeading {
+    font-size: 24px;
+  }
+
+  /* past the paper's 18px padding, then 14px over its edge */
+  .tab {
+    width: calc(100% + 32px);
+    margin-right: -32px;
+  }
+
+  .tab[data-first] .heading {
+    font-size: 21px;
+  }
+
+  .sentence {
+    font-size: 15px;
+  }
+}

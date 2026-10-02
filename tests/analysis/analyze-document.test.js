@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ModelError, analyzeDocument } from "../../lib/analysis/index.js";
+import { CITATION_DROPPED, ModelError, analyzeDocument } from "../../lib/analysis/index.js";
+import { SEVERITY_IDS } from "../../lib/analysis/severity.js";
 import {
   DEFAULT_SUMMARY,
   FABRICATED_SENTENCE,
@@ -24,6 +25,7 @@ beforeEach(() => {
     throw new Error("analyzeDocument reached the network");
   });
   vi.spyOn(console, "warn").mockImplementation(() => {});
+  vi.spyOn(console, "error").mockImplementation(() => {});
 });
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -53,11 +55,72 @@ describe("analyzeDocument with a stubbed model", () => {
   });
 });
 
+describe("Flags as analysis returns them", () => {
+  it("carry the severity analysis assigned, from the scale, and their place in the Document", async () => {
+    const result = await analyzeDocument(contract, [], { model: stubFromSidecar(sidecar) });
+    expect(result.flags).toHaveLength(sidecar.flags.length);
+    result.flags.forEach((flag, i) => {
+      const planted = sidecar.flags[i];
+      expect(SEVERITY_IDS).toContain(flag.severity);
+      expect(flag.severity).toBe(planted.severity);
+      expect(flag.clauseType).toBe(planted.clauseType);
+      expect(flag.whatItMeans).toBe(planted.whatItMeans);
+      expect(flag.whyDangerous).toBe(planted.whyDangerous);
+      expect(flag.counterOffer).toBe(planted.counterOffer);
+      expect(flag.matchedRedLineId).toBeNull();
+      expect(flag.position).toBe(contract.indexOf(planted.sourceSentence));
+    });
+  });
+
+  it("fails as a retryable ModelError when a Flag's severity is not on the scale", async () => {
+    const reply = { summary: "S", flags: [{ ...sidecar.flags[0], severity: "catastrophic" }] };
+    const error = await analyzeDocument(contract, [], { model: stubContent(reply) }).catch((e) => e);
+    expect(error).toBeInstanceOf(ModelError);
+    expect(error.retryable).toBe(true);
+  });
+});
+
 describe("Source Sentences (ADR-0001)", () => {
-  it("drops a Flag whose Source Sentence is not in the Document", async () => {
-    const result = await analyzeDocument(contract, [], { model: stubWithFabricatedSentence(sidecar) });
+  it("drops a Flag whose Source Sentence is not in the Document, and logs the drop with the Document id and what the model returned", async () => {
+    const drops = [];
+    const result = await analyzeDocument(contract, [], {
+      model: stubWithFabricatedSentence(sidecar),
+      documentId: "doc-123",
+      logDrop: (record) => drops.push(record),
+    });
     expect(result.flags.map((f) => f.sourceSentence)).not.toContain(FABRICATED_SENTENCE);
     expect(result.flags).toHaveLength(sidecar.flags.length);
+    expect(drops).toEqual([
+      {
+        tag: CITATION_DROPPED,
+        documentId: "doc-123",
+        clauseType: "payment-terms",
+        severity: "critical",
+        sourceSentence: FABRICATED_SENTENCE,
+      },
+    ]);
+  });
+
+  it("names an unsaved Document in the drop log by a stable hash of its text", async () => {
+    const drops = [];
+    const logDrop = (record) => drops.push(record);
+    await analyzeDocument(contract, [], { model: stubWithFabricatedSentence(sidecar), logDrop });
+    await analyzeDocument(contract, [], { model: stubWithFabricatedSentence(sidecar), logDrop });
+    await analyzeDocument(clean, [], { model: stubWithFabricatedSentence(sidecar, { only: [] }), logDrop });
+    expect(drops).toHaveLength(3);
+    expect(drops[0].documentId).toMatch(/^unsaved:sha256:[0-9a-f]{64}$/);
+    expect(drops[1].documentId).toBe(drops[0].documentId);
+    expect(drops[2].documentId).not.toBe(drops[0].documentId);
+    expect(drops[0].documentId).not.toContain("Brand");
+  });
+
+  it("writes each drop to the server log as one tagged JSON line by default", async () => {
+    const lines = [];
+    vi.spyOn(console, "error").mockImplementation((line) => lines.push(line));
+    await analyzeDocument(contract, [], { model: stubWithFabricatedSentence(sidecar), documentId: "doc-9" });
+    expect(lines).toHaveLength(1);
+    const record = JSON.parse(lines[0]);
+    expect(record).toMatchObject({ tag: "redline.citation_dropped", documentId: "doc-9", sourceSentence: FABRICATED_SENTENCE });
   });
 
   it("drops a Flag whose Source Sentence is a near miss of a real one", async () => {
@@ -91,6 +154,18 @@ describe("Source Sentences (ADR-0001)", () => {
       expect(documentText.includes(flag.sourceSentence)).toBe(true);
     }
     if (documentText === clean) expect(result.flags).toEqual([]);
+  });
+});
+
+describe("the checked list (story 46a)", () => {
+  it.each([
+    ["adhesion-contract.txt with every planted Flag", contract, () => stubFromSidecar(sidecar)],
+    ["adhesion-contract.txt when nothing is flagged", contract, () => stubClean()],
+    ["clean-document.txt when nothing is flagged", clean, () => stubClean()],
+    ["clean-document.txt when every Flag is dropped", clean, () => stubWithFabricatedSentence(sidecar)],
+  ])("is non-empty for %s", async (_case, documentText, stub) => {
+    const result = await analyzeDocument(documentText, [], { model: stub(), logDrop: () => {} });
+    expect(result.checked.length).toBeGreaterThan(0);
   });
 });
 

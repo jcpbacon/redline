@@ -1,8 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createAnalyzeHandler } from "../../lib/analysis/http.js";
-import { DEFAULT_SUMMARY, loadSidecar, readFixture, stubContent, stubFailing, stubFromSidecar } from "../helpers/stub-model.js";
+import {
+  DEFAULT_SUMMARY,
+  FABRICATED_SENTENCE,
+  loadSidecar,
+  readFixture,
+  stubClean,
+  stubContent,
+  stubFailing,
+  stubFromSidecar,
+  stubWithFabricatedSentence,
+} from "../helpers/stub-model.js";
+import { SEVERITY_IDS } from "../../lib/analysis/severity.js";
 
 const contract = readFixture("adhesion-contract.txt");
+const cleanText = readFixture("clean-document.txt");
 const sidecar = loadSidecar();
 
 function post(body) {
@@ -33,6 +45,51 @@ describe("POST /api/analyze", () => {
     expect(body.summary).toBe(DEFAULT_SUMMARY);
     expect(body.checked.length).toBeGreaterThan(0);
     for (const flag of body.flags) expect(contract.includes(flag.sourceSentence)).toBe(true);
+  });
+
+  it("returns the Flags ranked, with the critical IP clause first and Document order within each severity", async () => {
+    const drops = [];
+    // The stub lists the planted clauses lowest severity first, so the order
+    // the route returns can only come from ranking.
+    const reversed = stubFromSidecar({ flags: [...sidecar.flags].reverse() }, { extraFlags: [] });
+    const res = await createAnalyzeHandler({ model: reversed, logDrop: (r) => drops.push(r) })(post({ text: contract }));
+    const body = await res.json();
+
+    expect(body.clean).toBe(false);
+    expect(body.flags).toHaveLength(sidecar.flags.length);
+    expect(body.flags[0].clauseType).toBe("ip-assignment-or-licence-scope");
+    expect(body.flags[0].severity).toBe("critical");
+    for (let i = 1; i < body.flags.length; i++) {
+      const [a, b] = [body.flags[i - 1], body.flags[i]];
+      const order = SEVERITY_IDS.indexOf(a.severity) - SEVERITY_IDS.indexOf(b.severity);
+      expect(order).toBeLessThanOrEqual(0);
+      if (order === 0) expect(contract.indexOf(a.sourceSentence)).toBeLessThan(contract.indexOf(b.sourceSentence));
+    }
+    for (const flag of body.flags) {
+      expect(typeof flag.whatItMeans).toBe("string");
+      expect(typeof flag.whyDangerous).toBe("string");
+      expect(flag.redLine).toBeNull();
+    }
+    expect(drops).toEqual([]);
+  });
+
+  it("never sends a Flag whose Source Sentence is not in the Document", async () => {
+    const drops = [];
+    const res = await createAnalyzeHandler({ model: stubWithFabricatedSentence(sidecar), logDrop: (r) => drops.push(r) })(
+      post({ text: contract }),
+    );
+    const body = await res.json();
+    expect(JSON.stringify(body)).not.toContain(FABRICATED_SENTENCE);
+    expect(drops).toHaveLength(1);
+  });
+
+  it("marks a Document with no Flags as clean and still lists what was checked", async () => {
+    const res = await createAnalyzeHandler({ model: stubClean() })(post({ text: cleanText }));
+    const body = await res.json();
+    expect(res.status).toBe(200);
+    expect(body.flags).toEqual([]);
+    expect(body.clean).toBe(true);
+    expect(body.checked.length).toBeGreaterThan(0);
   });
 
   it.each([

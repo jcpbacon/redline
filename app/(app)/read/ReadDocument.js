@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import FlagList from "./FlagList";
 import styles from "./read.module.css";
 
 /*
@@ -10,14 +11,15 @@ import styles from "./read.module.css";
  *   confirm   → the text shown exactly as pasted, before anything is sent
  *   analysing → the request is running; elapsed time shows it is alive
  *   failed    → a retryable error; Retry sends the same text again
- *   done      → the summary
+ *   done      → the summary, then the ranked Flags (or the clean verdict)
  *
  * The text lives in this component's state from paste to result, so a retry
  * never asks for it again. It is sent as-is: no trimming, no normalising,
  * because Source Sentences are matched against exactly this string
  * (ADR-0001).
  *
- * Flags are in the response but not drawn here; ticket #29 builds that list.
+ * The route ranks the Flags and the analysis module has already dropped any
+ * whose Source Sentence is not in the text; this screen only draws them.
  */
 
 const NETWORK_ERROR = "Couldn’t reach Redline. Check your connection and try again. Your text is still here.";
@@ -27,6 +29,7 @@ export default function ReadDocument() {
   const [text, setText] = useState("");
   const [stage, setStage] = useState(/** @type {"compose" | "confirm" | "analysing" | "failed" | "done"} */ ("compose"));
   const [summary, setSummary] = useState("");
+  const [result, setResult] = useState(/** @type {{ flags: any[], checked: Array<{ id: string, label: string }> } | null} */ (null));
   const [error, setError] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const inFlight = useRef(/** @type {AbortController | null} */ (null));
@@ -77,18 +80,27 @@ export default function ReadDocument() {
 
     const body = await response.json().catch(() => null);
     if (controller.signal.aborted) return;
-    if (!response.ok || !body || typeof body.summary !== "string") {
+    if (
+      !response.ok ||
+      !body ||
+      typeof body.summary !== "string" ||
+      !Array.isArray(body.flags) ||
+      !Array.isArray(body.checked) ||
+      body.checked.length === 0
+    ) {
       setError(body && typeof body.error === "string" ? body.error : FALLBACK_ERROR);
       setStage("failed");
       return;
     }
     setSummary(body.summary);
+    setResult({ flags: body.flags, checked: body.checked });
     setStage("done");
   }
 
   function startOver() {
     setText("");
     setSummary("");
+    setResult(null);
     setError("");
     setStage("compose");
   }
@@ -188,10 +200,7 @@ export default function ReadDocument() {
                   </h1>
                   <p className={styles.summary}>{summary}</p>
                 </section>
-                <p className={styles.note}>
-                  Only the summary is shown for now. The list of clauses that could hurt you
-                  isn&rsquo;t built yet, so don&rsquo;t read this as a clean result.
-                </p>
+                {result ? <FlagList flags={result.flags} checked={result.checked} headingId={`${hintId}-flags`} /> : null}
                 <div className={styles.actions}>
                   <button type="button" className={styles.quiet} onClick={startOver}>
                     Read another document

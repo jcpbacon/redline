@@ -211,15 +211,6 @@
   white-space: pre-line;
 }
 
-.note {
-  margin: 0;
-  max-width: 62ch;
-  font-family: var(--voice);
-  font-size: 15px;
-  line-height: 1.4;
-  color: var(--ink-soft);
-}
-
 /* The Document exactly as pasted: every space and line break kept. */
 .document {
   margin: 0;
