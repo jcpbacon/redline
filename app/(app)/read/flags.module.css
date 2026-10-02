@@ -445,6 +445,12 @@
   --stroke: rgba(255, 154, 60, 0.7);
 }
 
+/* An answer's Source Sentence: the question card's own rule blue, not a rank
+   colour, because an answer isn't ranked (The Rank-Only Rule). */
+.docMark[data-band="answer"] {
+  --stroke: var(--card-rule);
+}
+
 .docMark:focus {
   outline: 2px dashed var(--ink);
   outline-offset: 2px;

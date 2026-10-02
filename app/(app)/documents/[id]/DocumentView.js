@@ -21,6 +21,10 @@ import { setFlagDismissed } from "./actions";
  * snapshot (so an edited or deleted Red Line reads as it did then), and a
  * note when the Reader's Red Lines have changed since, so they know to read
  * it again.
+ *
+ * The question box comes with the Flags: its history is the questions stored
+ * with this Document, oldest first, and each new one is stored as it's
+ * answered (lib/questions/http.js).
  */
 
 /**
@@ -28,9 +32,10 @@ import { setFlagDismissed } from "./actions";
  *   document: import("../../../../lib/documents/store.js").StoredDocument,
  *   analysis: ReturnType<typeof import("../../../../lib/documents/rows.js").analysisFromRecord>,
  *   redLines: Array<{ id: string, text: string }>,
+ *   questions: import("../../../../lib/questions/text.js").AskedQuestion[],
  * }} props
  */
-export default function DocumentView({ document, analysis, redLines }) {
+export default function DocumentView({ document, analysis, redLines, questions }) {
   const dates = [`Saved ${formatDay(document.savedAt)}`];
   if (analysis) dates.push(`read ${formatDay(analysis.createdAt)}`);
 
@@ -65,6 +70,7 @@ export default function DocumentView({ document, analysis, redLines }) {
                   checked={analysis.checked}
                   headingId="flags-heading"
                   onDismiss={setFlagDismissed}
+                  questions={{ url: `/api/documents/${encodeURIComponent(document.id)}/questions`, initial: questions }}
                 />
               </Fragment>
             </>

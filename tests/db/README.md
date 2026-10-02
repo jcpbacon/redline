@@ -25,6 +25,13 @@ Red Line nulling `matched_red_line_id` while the Flag keeps its mark; and the
 and cleared through the store as its Reader, read back by `latest_analysis`,
 untouchable by another Reader, and absent from the Flags of a new run.
 
+`questions.test.js` covers the question box (ticket #24): a grounded answer
+and an unanswerable one stored and listed back oldest first, null answer text
+on an unanswerable row, an answer resting on a sentence not in the Document
+stored as unanswerable, nothing stored when the model fails, another Reader
+unable to read or add questions, and the `/api/documents/[id]/questions`
+handler.
+
 `pglite-store.js` gives lib/documents/store.js's interface over this database
 as one Reader, running the same view and functions, so
 `tests/documents/analyse-saved.test.js` can drive the analyse-by-id code and
@@ -51,8 +58,9 @@ SUPABASE_URL=… NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=… SUPABASE_SECRET_KEY=�
 
 `tests/integration/library-live.test.js` runs save → list → open → analyse for
 two Readers the same way, through lib/documents/store.js;
-`tests/integration/red-lines-live.test.js` does the same for Red Lines, and
-`tests/integration/dismiss-live.test.js` for dismissing a Flag.
+`tests/integration/red-lines-live.test.js` does the same for Red Lines, 
+`tests/integration/dismiss-live.test.js` for dismissing a Flag, and
+`tests/integration/questions-live.test.js` for questions.
 
 All of them are skipped whenever any of those three variables is missing, which is why
 `npm test` reports it as skipped today.

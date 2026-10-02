@@ -352,7 +352,15 @@ export default function ReadDocument({ canSave = false }) {
                 {result ? (
                   // Unsaved: no dismissing here. A dismissal is kept per Flag in
                   // the library, and nothing about this reading is kept.
-                  <ReadingDesk text={text} flags={result.flags} checked={result.checked} headingId={`${hintId}-flags`}>
+                  <ReadingDesk
+                    text={text}
+                    flags={result.flags}
+                    checked={result.checked}
+                    headingId={`${hintId}-flags`}
+                    // Questions about an unsaved reading carry the text with them
+                    // and are kept only on this page.
+                    questions={{ url: "/api/questions", text }}
+                  >
                     <div className={styles.actions}>
                       <button type="button" className={styles.quiet} onClick={startOver}>
                         Read another document

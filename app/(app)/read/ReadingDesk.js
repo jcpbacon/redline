@@ -4,6 +4,7 @@ import { Fragment, useEffect, useId, useRef, useState } from "react";
 import { locateSourceSentence, sourceContext } from "../../../lib/analysis/context.js";
 import { flagView } from "../../../lib/analysis/flag-view.js";
 import { CleanVerdict, FlagTab, bandOf, ordinal } from "./FlagList";
+import QuestionCard from "./QuestionCard";
 import styles from "./flags.module.css";
 import read from "./read.module.css";
 
@@ -27,6 +28,11 @@ import read from "./read.module.css";
  * is; a dismissed Flag leaves the main list and is listed under a control
  * that shows it again and can put it back. A Document whose Flags are all
  * dismissed says so, never "Nothing flagged" (lib/analysis/flag-view.js).
+ *
+ * With `questions`, the question box (./QuestionCard.js) sits after the
+ * Flags. An answer's Source Sentence is shown in the Document the same way
+ * as a Flag's, with the card's own highlight (not a rank colour) and a
+ * "Back to your question" button. Only one sentence is lit at a time.
  */
 
 /**
@@ -43,10 +49,11 @@ const FAILED = "Redline couldn’t save that change. Try again in a moment.";
  *   checked: Array<{ id: string, label: string }>,
  *   headingId: string,
  *   onDismiss?: DismissFn,
+ *   questions?: import("./QuestionCard").QuestionSource,
  *   children?: import("react").ReactNode,
  * }} props
  */
-export default function ReadingDesk({ text, flags, checked, headingId, onDismiss, children }) {
+export default function ReadingDesk({ text, flags, checked, headingId, onDismiss, questions, children }) {
   const documentId = useId();
   const dismissedId = useId();
 
@@ -57,6 +64,7 @@ export default function ReadingDesk({ text, flags, checked, headingId, onDismiss
     () => /** @type {Record<string, string | null>} */ (Object.fromEntries(flags.filter((f) => f.id).map((f) => [f.id, f.dismissedAt ?? null]))),
   );
   const [active, setActive] = useState(/** @type {{ rank: number, at: number } | null} */ (null));
+  const [answer, setAnswer] = useState(/** @type {{ key: string, sentence: string, at: number } | null} */ (null));
   const [showDismissed, setShowDismissed] = useState(false);
   const [pending, setPending] = useState(/** @type {string | null} */ (null));
   const [status, setStatus] = useState("");
@@ -66,20 +74,27 @@ export default function ReadingDesk({ text, flags, checked, headingId, onDismiss
   const markRef = useRef(/** @type {HTMLElement | null} */ (null));
   const sectionHeadingRef = useRef(/** @type {HTMLHeadingElement | null} */ (null));
   const showButtons = useRef(/** @type {Map<number, HTMLButtonElement>} */ (new Map()));
+  const answerButtons = useRef(/** @type {Map<string, HTMLButtonElement>} */ (new Map()));
 
   const shown = flags.map((flag) => (flag.id ? { ...flag, dismissedAt: dismissedAt[flag.id] ?? null } : flag));
   const view = flagView(shown);
 
   const activeFlag = active ? shown[active.rank - 1] : null;
-  const highlight = activeFlag ? sourceContext(text, activeFlag) : null;
+  // An answer's sentence goes through the same check as a Flag's: one that
+  // isn't in the text throws rather than lighting the wrong words.
+  const highlight = activeFlag
+    ? sourceContext(text, activeFlag)
+    : answer
+      ? sourceContext(text, { sourceSentence: answer.sentence })
+      : null;
 
   // After a tab is pulled: bring the sentence into view and put focus on it.
   useEffect(() => {
     const mark = markRef.current;
-    if (!active || !mark) return;
+    if ((!active && !answer) || !mark) return;
     mark.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
     mark.focus({ preventScroll: true });
-  }, [active]);
+  }, [active, answer]);
 
   // After a Flag moves between lists, put focus where the Reader can carry on.
   useEffect(() => {
@@ -92,12 +107,25 @@ export default function ReadingDesk({ text, flags, checked, headingId, onDismiss
 
   /** @param {number} rank */
   function show(rank) {
+    setAnswer(null);
     setActive({ rank, at: Date.now() });
   }
 
+  /**
+   * @param {string} key
+   * @param {string} sentence
+   */
+  function showAnswer(key, sentence) {
+    setActive(null);
+    setAnswer({ key, sentence, at: Date.now() });
+  }
+
   function back() {
-    if (!active) return;
-    const button = showButtons.current.get(active.rank);
+    const button = active
+      ? showButtons.current.get(active.rank)
+      : answer
+        ? answerButtons.current.get(answer.key)
+        : null;
     if (button) {
       button.scrollIntoView({ block: "center", behavior: reducedMotion() ? "auto" : "smooth" });
       button.focus({ preventScroll: true });
@@ -242,24 +270,36 @@ export default function ReadingDesk({ text, flags, checked, headingId, onDismiss
         </section>
       )}
 
+      {questions ? (
+        <QuestionCard
+          source={questions}
+          activeKey={answer?.key ?? null}
+          onShow={showAnswer}
+          showRef={(key, node) => {
+            if (node) answerButtons.current.set(key, node);
+            else answerButtons.current.delete(key);
+          }}
+        />
+      ) : null}
+
       {children}
 
       <h2 className={read.label}>The document</h2>
       <div className={read.document} id={documentId}>
-        {highlight && active ? (
+        {highlight && (active || answer) ? (
           <>
             {highlight.before}
             <mark
-              key={active.at}
+              key={active ? active.at : answer?.at}
               ref={markRef}
               tabIndex={-1}
               className={`${styles.mark} ${styles.docMark}`}
-              data-band={bandOf(/** @type {TabFlag} */ (activeFlag))}
+              data-band={active ? bandOf(/** @type {TabFlag} */ (activeFlag)) : "answer"}
             >
               {highlight.sentence}
             </mark>
             <button type="button" className={styles.back} onClick={back}>
-              Back to the {ordinal(active.rank)} flag
+              {active ? `Back to the ${ordinal(active.rank)} flag` : "Back to your question"}
             </button>
             {highlight.after}
           </>

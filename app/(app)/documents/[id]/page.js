@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { analysisFromRecord } from "../../../../lib/documents/rows.js";
 import { readerStore } from "../../../../lib/documents/session.js";
+import { questionsFromRows } from "../../../../lib/questions/text.js";
 import { readerRedLines } from "../../../../lib/red-lines/index.js";
 import Notice, { AccountsOff, SignInFirst } from "../../Notice";
 import DocumentView from "./DocumentView";
@@ -24,6 +25,9 @@ import DocumentView from "./DocumentView";
  * A stored Flag whose Source Sentence isn't in the stored text makes
  * analysisFromRecord throw rather than render it (ADR-0001).
  *
+ * The questions asked of this Document are loaded too, oldest first, for the
+ * question box (ticket #24).
+ *
  * Drawing is ./DocumentView.js, which carries the "AI-generated, not legal
  * advice" line.
  */
@@ -44,10 +48,12 @@ export default async function DocumentPage({ params }) {
   let document;
   let record;
   let redLines = [];
+  let questionRows = [];
   try {
     document = await session.store.getDocument(id);
     record = document ? await session.store.latestAnalysis(document.id) : null;
     if (document) redLines = await readerRedLines(session.store);
+    if (document) questionRows = await session.store.listQuestions(document.id);
   } catch (error) {
     console.error("Couldn't load a Document:", error);
     return (
@@ -59,5 +65,8 @@ export default async function DocumentPage({ params }) {
   if (!document) notFound();
 
   const analysis = analysisFromRecord(record, document.text);
-  return <DocumentView document={document} analysis={analysis} redLines={redLines} />;
+  // Throws, like a stored Flag, if a stored answer rests on a sentence that
+  // isn't in the stored text (ADR-0001).
+  const questions = questionsFromRows(questionRows, document.text);
+  return <DocumentView document={document} analysis={analysis} redLines={redLines} questions={questions} />;
 }

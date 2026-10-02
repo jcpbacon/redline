@@ -1,3 +1,4 @@
+import { answerColumns } from "../../lib/documents/store.js";
 import { as } from "./supabase-shim.js";
 
 /*
@@ -97,6 +98,32 @@ export function createPgliteStore(db, readerId) {
       });
     },
 
+    async listQuestions(documentId) {
+      if (!UUID.test(documentId)) return [];
+      return run(async (tx) => {
+        const { rows } = await tx.query(
+          `select id, question, answer_text, grounded_in, unanswerable, created_at
+           from public.questions where document_id = $1
+           order by created_at asc, id asc`,
+          [documentId],
+        );
+        return rows.map(questionRow);
+      });
+    },
+
+    async saveQuestion({ documentId, question, answer }) {
+      const columns = answerColumns(answer);
+      return run(async (tx) => {
+        const { rows } = await tx.query(
+          `insert into public.questions (document_id, question, answer_text, grounded_in, unanswerable)
+           values ($1, $2, $3, $4::jsonb, $5)
+           returning id, question, answer_text, grounded_in, unanswerable, created_at`,
+          [documentId, question, columns.answer_text, JSON.stringify(columns.grounded_in), columns.unanswerable],
+        );
+        return questionRow(rows[0]);
+      });
+    },
+
     async listRedLines() {
       return run(async (tx) => {
         const { rows } = await tx.query(
@@ -140,5 +167,17 @@ export function createPgliteStore(db, readerId) {
         return /** @type {any} */ (rows[0]).seeded === true;
       });
     },
+  };
+}
+
+/** A questions row as PostgREST would return it (timestamps as ISO text). */
+function questionRow(/** @type {any} */ row) {
+  return {
+    id: row.id,
+    question: row.question,
+    answer_text: row.answer_text,
+    grounded_in: row.grounded_in,
+    unanswerable: row.unanswerable,
+    created_at: iso(row.created_at),
   };
 }
