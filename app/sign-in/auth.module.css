@@ -1,0 +1,102 @@
+/*
+ * The sign-in form, on the same sheet as the other notice pages. Inputs are
+ * ruled lines on paper and the one action is the black tab (DESIGN.md, app
+ * shell brief). No rank colours here: an error is ink on paper, carried by
+ * its words and a heavy rule, never by red-orange (the Rank-Only Rule).
+ */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin: 22px 0 26px;
+}
+
+.form button {
+  align-self: flex-start;
+  border: 0;
+  cursor: pointer;
+}
+
+.form button:disabled {
+  cursor: progress;
+  opacity: 0.6;
+  transform: none;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-family: var(--voice);
+  font-weight: 800;
+  font-stretch: 90%;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* An input is a ruled line on paper. */
+.input {
+  width: 100%;
+  padding: 8px 0 7px;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--voice);
+  font-size: 18px;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.input[aria-invalid="true"] {
+  border-bottom-width: 2px;
+  padding-bottom: 6px;
+}
+
+.error {
+  margin: 0;
+  padding-left: 12px;
+  border-left: 3px solid var(--ink);
+  font-family: var(--voice);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.switch {
+  margin: 0;
+  font-family: var(--voice);
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.switchLink {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.switchLink:hover {
+  text-decoration-thickness: 2.5px;
+}
+
+.email {
+  font-weight: 700;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}

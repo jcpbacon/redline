@@ -1,26 +1,54 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { AUTH_COPY } from "../../lib/auth/messages.js";
+import { AFTER_SIGN_IN } from "../../lib/auth/routes.js";
+import { getSupabaseConfig } from "../../lib/supabase/config.js";
+import { getReader } from "../../lib/supabase/server.js";
+import AuthForm from "./AuthForm";
 import styles from "../notice.module.css";
 
 /*
- * Where the landing page's one call to action, "Try it on a document", leads.
- * Accounts arrive with ticket #18, which puts sign-in here. Until then this
- * route says so and sends the Reader to /read, where pasted text can be
- * analysed without an account.
+ * /sign-in: where the landing page's one call to action leads.
+ *
+ *   accounts off      → say so, and send the Reader to /read, which works
+ *                       without an account
+ *   already signed in → straight on into the app
+ *   otherwise         → sign in, or create an account (?mode=create)
+ *
+ * `?error=confirm` is set by /auth/confirm when an email link fails.
  */
 
 export const metadata = {
-  title: "Sign-in isn’t built yet · Redline",
-  description: "You can try Redline on pasted text without an account.",
+  title: "Sign in · Redline",
+  description: "Sign in to Redline, or create an account.",
 };
 
-export default function SignIn() {
+export default async function SignIn({ searchParams }) {
+  if (!getSupabaseConfig()) return <AccountsOff />;
+
+  if (await getReader()) redirect(AFTER_SIGN_IN);
+
+  const params = await searchParams;
+  const mode = params?.mode === "create" ? "create" : "sign-in";
+  const notice = params?.error === "confirm" ? AUTH_COPY.confirmFailed : null;
+
   return (
     <main className={styles.table}>
       <div className={styles.sheet}>
-        <h1 className={styles.heading}>Sign-in isn&rsquo;t built yet</h1>
+        <AuthForm key={mode} mode={mode} notice={notice} />
+      </div>
+    </main>
+  );
+}
+
+function AccountsOff() {
+  return (
+    <main className={styles.table}>
+      <div className={styles.sheet}>
+        <h1 className={styles.heading}>Accounts aren’t switched on here</h1>
         <p className={styles.body}>
-          You can still try Redline on a document. Paste its text and you&rsquo;ll get a
-          plain-English summary. Without an account, nothing is saved.
+          Sign-in isn&rsquo;t set up on this version of Redline, so you can&rsquo;t create an account
+          here. You can still paste a document and read what it says, but nothing gets saved.
         </p>
         <Link href="/read" className={styles.action}>
           Paste a document

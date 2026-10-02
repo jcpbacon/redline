@@ -62,3 +62,40 @@
 .rule :focus-visible {
   outline-color: var(--paper);
 }
+
+/* Sign in / sign out, pushed to the far end of the rule. */
+.account {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 0 auto;
+  min-width: 0;
+}
+
+.who {
+  font-family: var(--voice);
+  font-size: 13px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 28ch;
+}
+
+.navButton {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .rule {
+    gap: 18px;
+  }
+
+  .who {
+    display: none;
+  }
+}

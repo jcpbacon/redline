@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import Account from "./Account";
 import Nav from "./Nav";
 import styles from "./app.module.css";
 
@@ -9,7 +11,8 @@ import styles from "./app.module.css";
  * Lines join this rule when tickets #21 and #22 build them.
  *
  * Nothing here needs an account or Supabase: a Reader who is not signed in can
- * still read a pasted Document.
+ * still read a pasted Document. The account control at the right end of the
+ * rule (./Account.js) renders nothing when accounts are off.
  */
 
 export default function AppLayout({ children }) {
@@ -20,6 +23,9 @@ export default function AppLayout({ children }) {
           Redline
         </Link>
         <Nav />
+        <Suspense fallback={null}>
+          <Account />
+        </Suspense>
       </header>
       {children}
     </div>

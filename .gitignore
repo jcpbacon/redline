@@ -101,6 +101,8 @@ lerna-debug.log*
 *.sqlite3
 *.db
 *.sql
+# Schema migrations are source code, not dumps.
+!supabase/migrations/*.sql
 *.dump
 
 # ---- Editor / OS ----

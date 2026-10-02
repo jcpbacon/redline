@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit -p jsconfig.json"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "next": "^16.3.8",
     "react": "^18.3.0",
@@ -22,6 +23,7 @@
     "node": "24.x"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@types/node": "^24.19.1",
     "typescript": "^7.0.2",
     "vitest": "^5.0.3"

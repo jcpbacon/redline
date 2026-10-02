@@ -27,7 +27,8 @@
     "scripts/**/*",
     "tests/**/*",
     "*.config.js",
-    "*.config.mjs"
+    "*.config.mjs",
+    "proxy.js"
   ],
   "exclude": [
     "node_modules",
