@@ -3,31 +3,27 @@ import styles from "../notice.module.css";
 
 /*
  * Where the landing page's one call to action, "Try it on a document", leads.
- * Until accounts exist (ticket #18) this route answers the click instead of
- * 404ing, so the copy speaks to trying it on a document. The path is /sign-in
- * because that is what #18 puts here; a Reader sees the button label, not the
- * route, so the heading matches the button rather than the URL.
+ * Accounts arrive with ticket #18, which puts sign-in here. Until then this
+ * route says so and sends the Reader to /read, where pasted text can be
+ * analysed without an account.
  */
 
 export const metadata = {
-  title: "Not built yet — Redline",
-  description: "Redline cannot read your own document yet.",
+  title: "Sign-in isn’t built yet · Redline",
+  description: "You can try Redline on pasted text without an account.",
 };
 
 export default function SignIn() {
   return (
     <main className={styles.table}>
       <div className={styles.sheet}>
-        <h1 className={styles.heading}>You can&rsquo;t try it on a document yet</h1>
+        <h1 className={styles.heading}>Sign-in isn&rsquo;t built yet</h1>
         <p className={styles.body}>
-          Redline can&rsquo;t read your own document yet. That part isn&rsquo;t built.
+          You can still try Redline on a document. Paste its text and you&rsquo;ll get a
+          plain-English summary. Without an account, nothing is saved.
         </p>
-        <p className={styles.body}>
-          The marked-up agreement on the front page was written by hand, to show what a
-          finished analysis will look like.
-        </p>
-        <Link href="/" className={styles.action}>
-          Back to the example
+        <Link href="/read" className={styles.action}>
+          Paste a document
         </Link>
       </div>
     </main>

@@ -1,0 +1,64 @@
+/* The desk around every app screen: teal table, thin black rule on top. */
+
+.shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.12), transparent 60%),
+    var(--table);
+  overflow-x: clip;
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  min-height: 44px;
+  padding: 0 clamp(16px, 4vw, 40px);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.wordmark {
+  font-family: var(--voice);
+  font-weight: 800;
+  font-stretch: 125%;
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--paper);
+}
+
+.nav {
+  display: flex;
+  gap: 20px;
+}
+
+.navLink {
+  font-family: var(--voice);
+  font-weight: 800;
+  font-stretch: 90%;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.72);
+  padding: 15px 0 12px;
+  border-bottom: 3px solid transparent;
+}
+
+.navLink:hover {
+  color: var(--paper);
+}
+
+.navLink[aria-current="page"] {
+  color: var(--paper);
+  border-bottom-color: var(--paper);
+}
+
+.rule :focus-visible {
+  outline-color: var(--paper);
+}

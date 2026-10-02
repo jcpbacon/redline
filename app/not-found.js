@@ -16,8 +16,8 @@ export default function NotFound() {
       <div className={styles.sheet}>
         <h1 className={styles.heading}>That page isn&rsquo;t here</h1>
         <p className={styles.body}>
-          Nothing exists at this address. Redline is one page so far, so the front page is
-          probably where you were headed.
+          Nothing exists at this address. The front page is probably where you were
+          headed.
         </p>
         <Link href="/" className={styles.action}>
           Back to the front page
