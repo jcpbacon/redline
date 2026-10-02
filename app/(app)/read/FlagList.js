@@ -1,5 +1,6 @@
 import { CLAUSE_TYPES } from "../../../lib/analysis/clause-types.js";
 import { SEVERITY_IDS, severityLabel } from "../../../lib/analysis/severity.js";
+import CounterOffer from "./CounterOffer";
 import styles from "./flags.module.css";
 
 /*
@@ -15,6 +16,11 @@ import styles from "./flags.module.css";
  * (DESIGN.md, The Word-With-Color Rule). The tab's colour follows the Flag's
  * severity band, so equal severities share a colour. Pulling a tab to scroll
  * to its sentence on the page is ticket #23; here every tab is open.
+ *
+ * Each tab ends with its drafted Counter-offer (./CounterOffer.js). The
+ * Counter-offer is optional: a Flag without one is still drawn, with a line
+ * saying none was drafted. The Source Sentence is not optional, and is never
+ * missing here (ADR-0001).
  */
 
 const CLAUSE_LABELS = new Map(CLAUSE_TYPES.map((t) => [t.id, t.label]));
@@ -28,7 +34,7 @@ export function ordinal(n) {
 
 /**
  * @param {{
- *   flags: Array<{ severity: string, clauseType: string, sourceSentence: string, whatItMeans: string, whyDangerous: string, redLine: { id: string, text: string } | null }>,
+ *   flags: Array<{ severity: string, clauseType: string, sourceSentence: string, whatItMeans: string, whyDangerous: string, counterOffer: string | null, redLine: { id: string, text: string } | null }>,
  *   checked: Array<{ id: string, label: string }>,
  *   headingId: string,
  * }} props
@@ -85,7 +91,10 @@ export default function FlagList({ flags, checked, headingId }) {
                   Ranked {rank} of {total}. Severity: {severityLabel(flag.severity).toLowerCase()}.
                 </p>
                 {flag.redLine ? (
-                  <p className={styles.redLine}>Breaks your red line: {flag.redLine.text}</p>
+                  <p className={styles.redLine}>
+                    <span className={styles.redLineTag}>Breaks your red line</span>{" "}
+                    <span className={styles.redLineText}>{flag.redLine.text}</span>
+                  </p>
                 ) : null}
                 <p className={styles.label}>The sentence</p>
                 <blockquote className={styles.sentence}>
@@ -97,6 +106,13 @@ export default function FlagList({ flags, checked, headingId }) {
                 <p className={styles.text}>{flag.whatItMeans}</p>
                 <p className={styles.label}>Why it&rsquo;s dangerous</p>
                 <p className={styles.text}>{flag.whyDangerous}</p>
+                {typeof flag.counterOffer === "string" && flag.counterOffer.trim() !== "" ? (
+                  <CounterOffer draft={flag.counterOffer} />
+                ) : (
+                  <p className={`${styles.meta} ${styles.noCounter}`}>
+                    Redline didn&rsquo;t draft a counter-offer for this clause.
+                  </p>
+                )}
               </div>
             </li>
           );
