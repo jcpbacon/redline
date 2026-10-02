@@ -9,13 +9,21 @@ import styles from "./library.module.css";
  * whatever supplied them.
  */
 
-/** @param {{ entries: import("../../../lib/documents/store.js").LibraryEntry[] }} props */
-export default function LibraryView({ entries }) {
+/**
+ * `deleted` is true right after the Reader deleted a Document: a status line
+ * says it's gone, read out by screen readers as the page arrives.
+ *
+ * @param {{ entries: import("../../../lib/documents/store.js").LibraryEntry[], deleted?: boolean }} props
+ */
+export default function LibraryView({ entries, deleted = false }) {
   return (
     <main className={read.desk}>
       <article className={read.paper}>
         <div className={read.stack}>
           <h1 className={read.heading}>Your library</h1>
+          <p className={deleted ? styles.status : read.visuallyHidden} role="status">
+            {deleted ? "Document deleted, along with its readings and questions." : ""}
+          </p>
           {entries.length === 0 ? (
             <>
               <p className={read.lede}>

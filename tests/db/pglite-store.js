@@ -68,6 +68,26 @@ export function createPgliteStore(db, readerId) {
       });
     },
 
+    async renameDocument(id, title) {
+      if (!UUID.test(id)) return null;
+      return run(async (tx) => {
+        const { rows } = await tx.query("update public.documents set title = $2 where id = $1 returning id, title", [
+          id,
+          title,
+        ]);
+        const row = /** @type {any} */ (rows[0]);
+        return row ? { id: row.id, title: row.title } : null;
+      });
+    },
+
+    async deleteDocument(id) {
+      if (!UUID.test(id)) return false;
+      return run(async (tx) => {
+        const { rows } = await tx.query("delete from public.documents where id = $1 returning id", [id]);
+        return rows.length > 0;
+      });
+    },
+
     async latestAnalysis(documentId) {
       if (!UUID.test(documentId)) return null;
       return run(async (tx) => {

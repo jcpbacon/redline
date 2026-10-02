@@ -8,7 +8,9 @@ import LibraryView from "./LibraryView";
  * Each entry shows its title and the date it was last read, or the date it
  * was saved if it never was, newest first. The list comes from the
  * library_entries view, which row-level security limits to this Reader's own
- * Documents. Renaming and deleting are ticket #25.
+ * Documents. Renaming and deleting happen on a Document's
+ * own page (ticket #25); deleting sends the Reader back here with
+ * ?deleted=1, and the list says so above the entries.
  *
  * Accounts off → say so and point at /read. Signed out → ask them to sign in.
  */
@@ -18,7 +20,7 @@ export const metadata = {
   description: "The documents you've saved in Redline.",
 };
 
-export default async function LibraryPage() {
+export default async function LibraryPage({ searchParams }) {
   const session = await readerStore();
   if (session.state === "off") return <AccountsOff />;
   if (session.state === "signed-out") {
@@ -37,5 +39,6 @@ export default async function LibraryPage() {
     );
   }
 
-  return <LibraryView entries={entries} />;
+  const { deleted } = (await searchParams) ?? {};
+  return <LibraryView entries={entries} deleted={deleted === "1"} />;
 }

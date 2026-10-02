@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_TITLE_LENGTH, UNTITLED, defaultTitle, prepareDocument, titleFor } from "../../lib/documents/title.js";
+import {
+  DEFAULT_TITLE_LENGTH,
+  MAX_TITLE_LENGTH,
+  UNTITLED,
+  defaultTitle,
+  prepareDocument,
+  prepareTitle,
+  titleFor,
+} from "../../lib/documents/title.js";
 import { readFixture } from "../helpers/stub-model.js";
 
 describe("defaultTitle", () => {
@@ -59,5 +67,42 @@ describe("prepareDocument", () => {
     const result = prepareDocument(input);
     expect(result.ok).toBe(false);
     if ("error" in result) expect(result.error.length).toBeGreaterThan(0);
+  });
+});
+
+describe("prepareTitle (renaming)", () => {
+  it("trims the new name and collapses runs of whitespace, non-breaking spaces included", () => {
+    expect(prepareTitle("  Lease   of\tFlat 4B \n")).toEqual({ ok: true, title: "Lease of Flat 4B" });
+  });
+
+  it("keeps a name that needs no tidying exactly as typed", () => {
+    expect(prepareTitle("Northwick — “final” v2")).toEqual({ ok: true, title: "Northwick — “final” v2" });
+  });
+
+  it.each([["empty", ""], ["only spaces", "   "], ["only a non-breaking space and a tab", " \t"], ["not text", null], ["a number", 42]])(
+    "refuses a name that is %s",
+    (_name, given) => {
+      const result = prepareTitle(given);
+      expect(result.ok).toBe(false);
+      expect(result).toHaveProperty("error", expect.any(String));
+    },
+  );
+
+  it("refuses a NUL character rather than strip it", () => {
+    expect(prepareTitle("Lease\u0000").ok).toBe(false);
+  });
+
+  it("cuts a long name at a word to the same limit as a title given at save time", () => {
+    const result = prepareTitle("clause ".repeat(60));
+    expect(result.ok).toBe(true);
+    const title = /** @type {{ title: string }} */ (result).title;
+    expect(Array.from(title).length).toBeLessThanOrEqual(MAX_TITLE_LENGTH);
+    expect(title.endsWith("clause…")).toBe(true);
+    expect(titleFor("clause ".repeat(60), "x")).toBe(title);
+  });
+
+  it("accepts a name exactly at the limit unchanged", () => {
+    const name = "a".repeat(MAX_TITLE_LENGTH);
+    expect(prepareTitle(name)).toEqual({ ok: true, title: name });
   });
 });

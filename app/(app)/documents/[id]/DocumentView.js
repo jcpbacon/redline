@@ -5,6 +5,8 @@ import { sameRedLines } from "../../../../lib/red-lines/text.js";
 import ReadingDesk from "../../read/ReadingDesk";
 import read from "../../read/read.module.css";
 import AnalyseDocument from "./AnalyseDocument";
+import DeleteDocument from "./DeleteDocument";
+import RenameDocument from "./RenameDocument";
 import { setFlagDismissed } from "./actions";
 
 /*
@@ -21,6 +23,10 @@ import { setFlagDismissed } from "./actions";
  * snapshot (so an edited or deleted Red Line reads as it did then), and a
  * note when the Reader's Red Lines have changed since, so they know to read
  * it again.
+ *
+ * The title can be renamed in place (./RenameDocument.js), and the Document
+ * deleted from the foot of the page after a confirm step that names it
+ * (./DeleteDocument.js). Both are ticket #25.
  *
  * The question box comes with the Flags: its history is the questions stored
  * with this Document, oldest first, and each new one is stored as it's
@@ -48,8 +54,9 @@ export default function DocumentView({ document, analysis, redLines, questions }
               Your library
             </Link>
           </p>
-          <h1 className={read.heading}>{document.title}</h1>
-          <p className={read.hint}>{dates.join(", ")}</p>
+          <RenameDocument documentId={document.id} title={document.title}>
+            <p className={read.hint}>{dates.join(", ")}</p>
+          </RenameDocument>
 
           <AnalyseDocument documentId={document.id} hasAnalysis={Boolean(analysis)} />
 
@@ -80,6 +87,8 @@ export default function DocumentView({ document, analysis, redLines, questions }
               <div className={read.document}>{document.text}</div>
             </>
           )}
+
+          <DeleteDocument documentId={document.id} title={document.title} />
         </div>
 
         <p className={read.footer}>AI-generated analysis, not legal advice.</p>

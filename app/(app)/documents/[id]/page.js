@@ -1,8 +1,6 @@
 import { notFound } from "next/navigation";
-import { analysisFromRecord } from "../../../../lib/documents/rows.js";
+import { loadSavedDocument, showSavedDocument } from "../../../../lib/documents/reopen.js";
 import { readerStore } from "../../../../lib/documents/session.js";
-import { questionsFromRows } from "../../../../lib/questions/text.js";
-import { readerRedLines } from "../../../../lib/red-lines/index.js";
 import Notice, { AccountsOff, SignInFirst } from "../../Notice";
 import DocumentView from "./DocumentView";
 
@@ -28,6 +26,10 @@ import DocumentView from "./DocumentView";
  * The questions asked of this Document are loaded too, oldest first, for the
  * question box (ticket #24).
  *
+ * Loading and shaping is lib/documents/reopen.js, which takes no model.
+ * Renaming and deleting are ./actions.js (ticket #25); a deleted Document's
+ * id is not found here.
+ *
  * Drawing is ./DocumentView.js, which carries the "AI-generated, not legal
  * advice" line.
  */
@@ -45,15 +47,9 @@ export default async function DocumentPage({ params }) {
     return <SignInFirst what="Saved documents open only for the account that saved them. Sign in to see yours." />;
   }
 
-  let document;
-  let record;
-  let redLines = [];
-  let questionRows = [];
+  let rows;
   try {
-    document = await session.store.getDocument(id);
-    record = document ? await session.store.latestAnalysis(document.id) : null;
-    if (document) redLines = await readerRedLines(session.store);
-    if (document) questionRows = await session.store.listQuestions(document.id);
+    rows = await loadSavedDocument(session.store, id);
   } catch (error) {
     console.error("Couldn't load a Document:", error);
     return (
@@ -62,11 +58,11 @@ export default async function DocumentPage({ params }) {
       </Notice>
     );
   }
-  if (!document) notFound();
+  // Deleted, never existed, or another Reader's: the same 404 either way.
+  if (!rows) notFound();
 
-  const analysis = analysisFromRecord(record, document.text);
-  // Throws, like a stored Flag, if a stored answer rests on a sentence that
-  // isn't in the stored text (ADR-0001).
-  const questions = questionsFromRows(questionRows, document.text);
+  // Throws if a stored Flag or answer rests on a sentence that isn't in the
+  // stored text (ADR-0001): fail loudly rather than render it.
+  const { document, analysis, redLines, questions } = showSavedDocument(rows);
   return <DocumentView document={document} analysis={analysis} redLines={redLines} questions={questions} />;
 }

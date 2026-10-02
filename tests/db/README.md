@@ -32,6 +32,15 @@ stored as unanswerable, nothing stored when the model fails, another Reader
 unable to read or add questions, and the `/api/documents/[id]/questions`
 handler.
 
+`manage.test.js` covers reopening, renaming and deleting (ticket #25,
+`20261002000800_document_text_fixed.sql`): the latest analysis reopened
+through `lib/documents/reopen.js` with no model configured or reachable; a
+rename changing the title only, the extracted text byte for byte the same
+(LF and CRLF/NBSP variants) and the database refusing any change to it; a
+delete removing the Document, its analyses, Flags and questions, after which
+the id loads as null; and a second Reader renaming or deleting nothing and
+getting "not found".
+
 `pglite-store.js` gives lib/documents/store.js's interface over this database
 as one Reader, running the same view and functions, so
 `tests/documents/analyse-saved.test.js` can drive the analyse-by-id code and
@@ -59,8 +68,9 @@ SUPABASE_URL=… NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=… SUPABASE_SECRET_KEY=�
 `tests/integration/library-live.test.js` runs save → list → open → analyse for
 two Readers the same way, through lib/documents/store.js;
 `tests/integration/red-lines-live.test.js` does the same for Red Lines, 
-`tests/integration/dismiss-live.test.js` for dismissing a Flag, and
-`tests/integration/questions-live.test.js` for questions.
+`tests/integration/dismiss-live.test.js` for dismissing a Flag,
+`tests/integration/questions-live.test.js` for questions, and
+`tests/integration/manage-live.test.js` for reopening, renaming and deleting.
 
 All of them are skipped whenever any of those three variables is missing, which is why
 `npm test` reports it as skipped today.
