@@ -28,6 +28,9 @@ const FLAGS = {
   },
 };
 
+/**
+ * @param {{ number: number, title: string, children?: import("react").ReactNode, flag?: { rank: number, ordinal: string, heading: string, meaning: string }, id?: string }} props
+ */
 function Clause({ number, title, children, flag, id }) {
   return (
     <div className={styles.clause}>
@@ -50,6 +53,7 @@ function Clause({ number, title, children, flag, id }) {
   );
 }
 
+/** @param {{ rank: number, id: string, children?: import("react").ReactNode }} props */
 function Mark({ rank, id, children }) {
   return (
     <mark id={id} className={styles.mark} data-rank={rank}>

@@ -8,15 +8,22 @@
     "start": "next start",
     "check:node": "node scripts/check-node.js",
     "check:audit": "node scripts/audit.js",
-    "prebuild": "npm run check:node && npm run check:audit"
+    "prebuild": "npm run check:node && npm run check:audit",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p jsconfig.json"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
-    "next": "^16.3.4",
+    "next": "^16.3.8",
     "react": "^18.3.0",
     "react-dom": "^18.3.0"
   },
   "engines": {
     "node": "24.x"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.1",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3"
   }
 }

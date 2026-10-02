@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "preserve",
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "maxNodeModuleJsDepth": 0,
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "types/**/*.d.ts",
+    "app/**/*",
+    "lib/**/*",
+    "scripts/**/*",
+    "tests/**/*",
+    "*.config.js",
+    "*.config.mjs"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next"
+  ]
+}
