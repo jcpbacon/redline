@@ -1,14 +1,21 @@
 import Link from "next/link";
+import { Fragment } from "react";
 import { formatDay } from "../../../../lib/documents/dates.js";
 import { sameRedLines } from "../../../../lib/red-lines/text.js";
-import FlagList from "../../read/FlagList";
+import ReadingDesk from "../../read/ReadingDesk";
 import read from "../../read/read.module.css";
 import AnalyseDocument from "./AnalyseDocument";
+import { setFlagDismissed } from "./actions";
 
 /*
  * One saved Document and its latest analysis, as page.js loaded them. The
  * "AI-generated, not legal advice" line is in the paper's footer, the same
  * place as on /read, printed whether or not the Document has been read yet.
+ *
+ * The Flags and the Document are drawn together by ReadingDesk, which shows
+ * each Flag's Source Sentence in the text and lets the Reader dismiss a Flag
+ * (story 23). Dismissals belong to this analysis's Flag rows: reading the
+ * Document again makes new Flags, none of them dismissed.
  *
  * Under the summary: the Red Lines this reading used, from the analysis's
  * snapshot (so an edited or deleted Red Line reads as it did then), and a
@@ -50,12 +57,23 @@ export default function DocumentView({ document, analysis, redLines }) {
                 <p className={read.summary}>{analysis.summary}</p>
               </section>
               <UsedRedLines used={analysis.redLines} current={redLines} />
-              <FlagList flags={analysis.flags} checked={analysis.checked} headingId="flags-heading" />
+              {/* Keyed by the analysis: reading it again starts fresh. */}
+              <Fragment key={analysis.id}>
+                <ReadingDesk
+                  text={document.text}
+                  flags={analysis.flags}
+                  checked={analysis.checked}
+                  headingId="flags-heading"
+                  onDismiss={setFlagDismissed}
+                />
+              </Fragment>
             </>
-          ) : null}
-
-          <h2 className={read.label}>The document</h2>
-          <div className={read.document}>{document.text}</div>
+          ) : (
+            <>
+              <h2 className={read.label}>The document</h2>
+              <div className={read.document}>{document.text}</div>
+            </>
+          )}
         </div>
 
         <p className={read.footer}>AI-generated analysis, not legal advice.</p>

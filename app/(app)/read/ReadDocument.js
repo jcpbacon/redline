@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { defaultTitle } from "../../../lib/documents/title.js";
 import { saveDocument } from "./actions";
-import FlagList from "./FlagList";
+import ReadingDesk from "./ReadingDesk";
 import styles from "./read.module.css";
 
 /*
@@ -34,7 +34,10 @@ import styles from "./read.module.css";
  * Source Sentences are matched against exactly this string (ADR-0001).
  *
  * The routes rank the Flags and the analysis module has already dropped any
- * whose Source Sentence is not in the text; this screen only draws them.
+ * whose Source Sentence is not in the text; this screen only draws them,
+ * through ./ReadingDesk.js, which also shows each one in the text. There is
+ * no dismissing on an unsaved reading: it isn't kept, so a dismissal couldn't
+ * be either.
  */
 
 const NETWORK_ERROR = "Couldn’t reach Redline. Check your connection and try again. Your text is still here.";
@@ -346,22 +349,31 @@ export default function ReadDocument({ canSave = false }) {
                   </h1>
                   <p className={styles.summary}>{summary}</p>
                 </section>
-                {result ? <FlagList flags={result.flags} checked={result.checked} headingId={`${hintId}-flags`} /> : null}
-                <div className={styles.actions}>
-                  <button type="button" className={styles.quiet} onClick={startOver}>
-                    Read another document
-                  </button>
-                </div>
+                {result ? (
+                  // Unsaved: no dismissing here. A dismissal is kept per Flag in
+                  // the library, and nothing about this reading is kept.
+                  <ReadingDesk text={text} flags={result.flags} checked={result.checked} headingId={`${hintId}-flags`}>
+                    <div className={styles.actions}>
+                      <button type="button" className={styles.quiet} onClick={startOver}>
+                        Read another document
+                      </button>
+                    </div>
+                  </ReadingDesk>
+                ) : null}
               </>
             ) : null}
 
-            <h2 className={styles.label}>The document</h2>
-            <div
-              className={styles.document}
-              data-busy={stage === "analysing" || stage === "saving" || undefined}
-            >
-              {text}
-            </div>
+            {stage === "done" && result ? null : (
+              <>
+                <h2 className={styles.label}>The document</h2>
+                <div
+                  className={styles.document}
+                  data-busy={stage === "analysing" || stage === "saving" || undefined}
+                >
+                  {text}
+                </div>
+              </>
+            )}
           </div>
         )}
 

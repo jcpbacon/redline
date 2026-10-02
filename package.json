@@ -9,7 +9,7 @@
     "check:node": "node scripts/check-node.js",
     "check:audit": "node scripts/audit.js",
     "prebuild": "npm run check:node && npm run check:audit",
-    "test": "vitest run",
+    "test": "vitest run --maxWorkers=2",
     "typecheck": "tsc --noEmit -p jsconfig.json"
   },
   "dependencies": {

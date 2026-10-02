@@ -4,9 +4,10 @@ import CounterOffer from "./CounterOffer";
 import styles from "./flags.module.css";
 
 /*
- * The result after the summary: the ranked Flags as index tabs, or, when
- * nothing survived, one white tab saying so with the list of what was looked
- * for (story 46a).
+ * The pieces of the Flag list: one index tab per Flag, and the single white
+ * tab for a clean Document (story 46a). ./ReadingDesk.js arranges them, keeps
+ * track of which tab is pulled and which the Reader has dismissed, and draws
+ * the Document beside them.
  *
  * Flags arrive already ranked and already checked: the route ranks them, and
  * the analysis module has dropped any Flag whose Source Sentence is not in the
@@ -14,8 +15,9 @@ import styles from "./flags.module.css";
  *
  * Rank is carried by a word (the ordinal) as well as by colour and size
  * (DESIGN.md, The Word-With-Color Rule). The tab's colour follows the Flag's
- * severity band, so equal severities share a colour. Pulling a tab to scroll
- * to its sentence on the page is ticket #23; here every tab is open.
+ * severity band, so equal severities share a colour. `rank` is the Flag's
+ * place in the analysis's ranking and stays the same when others are
+ * dismissed.
  *
  * Each tab ends with its drafted Counter-offer (./CounterOffer.js). The
  * Counter-offer is optional: a Flag without one is still drawn, with a line
@@ -32,92 +34,125 @@ export function ordinal(n) {
   return `${n}${suffix}`;
 }
 
+/** The band a Flag's colour comes from: 1 is the most severe. */
+export function bandOf(flag) {
+  return SEVERITY_IDS.indexOf(flag.severity) + 1;
+}
+
 /**
- * @param {{
- *   flags: Array<{ severity: string, clauseType: string, sourceSentence: string, whatItMeans: string, whyDangerous: string, counterOffer: string | null, redLine: { id: string | null, text: string } | null }>,
- *   checked: Array<{ id: string, label: string }>,
- *   headingId: string,
- * }} props
+ * @typedef {{ severity: string, clauseType: string, sourceSentence: string, whatItMeans: string, whyDangerous: string, counterOffer: string | null, redLine: { id: string | null, text: string } | null, position?: number, id?: string, dismissedAt?: string | null }} TabFlag
  */
-export default function FlagList({ flags, checked, headingId }) {
-  if (flags.length === 0) {
-    return (
-      <section className={styles.section} aria-labelledby={headingId}>
-        <div className={styles.tab} data-band="clean">
-          <h2 className={styles.face} id={headingId}>
-            <span className={styles.heading}>Nothing flagged</span>
-          </h2>
-          <div className={styles.body}>
-            <p className={styles.text}>
-              Redline looked for these kinds of clauses and found none that could hurt you:
-            </p>
-            <ul className={styles.checked}>
-              {checked.map((type) => (
-                <li key={type.id}>{type.label}</li>
-              ))}
-            </ul>
-            <p className={styles.meta}>
-              It didn&rsquo;t check for anything else, so read the rest before you sign.
-            </p>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
-  const total = flags.length;
-
+/**
+ * @param {{ checked: Array<{ id: string, label: string }>, headingId: string }} props
+ */
+export function CleanVerdict({ checked, headingId }) {
   return (
     <section className={styles.section} aria-labelledby={headingId}>
-      <h2 className={styles.sectionHeading} id={headingId}>
-        {total === 1 ? "1 clause could hurt you" : `${total} clauses could hurt you`}
-      </h2>
-      <p className={styles.lede}>
-        Worst first. Each one quotes the sentence it came from, word for word, so you can find it in
-        your copy.
-      </p>
-      <ol className={styles.list}>
-        {flags.map((flag, i) => {
-          const rank = ordinal(i + 1);
-          const band = SEVERITY_IDS.indexOf(flag.severity) + 1;
-          return (
-            <li key={`${i}-${flag.sourceSentence}`} className={styles.tab} data-band={band} data-first={i === 0 || undefined}>
-              <h3 className={styles.face}>
-                <span className={styles.rank}>{rank}</span>
-                <span className={styles.heading}>{CLAUSE_LABELS.get(flag.clauseType) ?? flag.clauseType}</span>
-              </h3>
-              <div className={styles.body}>
-                <p className={styles.meta}>
-                  Ranked {rank} of {total}. Severity: {severityLabel(flag.severity).toLowerCase()}.
-                </p>
-                {flag.redLine ? (
-                  <p className={styles.redLine}>
-                    <span className={styles.redLineTag}>Breaks your red line</span>{" "}
-                    <span className={styles.redLineText}>{flag.redLine.text}</span>
-                  </p>
-                ) : null}
-                <p className={styles.label}>The sentence</p>
-                <blockquote className={styles.sentence}>
-                  <mark className={styles.mark} data-band={band}>
-                    {flag.sourceSentence}
-                  </mark>
-                </blockquote>
-                <p className={styles.label}>What it means</p>
-                <p className={styles.text}>{flag.whatItMeans}</p>
-                <p className={styles.label}>Why it&rsquo;s dangerous</p>
-                <p className={styles.text}>{flag.whyDangerous}</p>
-                {typeof flag.counterOffer === "string" && flag.counterOffer.trim() !== "" ? (
-                  <CounterOffer draft={flag.counterOffer} />
-                ) : (
-                  <p className={`${styles.meta} ${styles.noCounter}`}>
-                    Redline didn&rsquo;t draft a counter-offer for this clause.
-                  </p>
-                )}
-              </div>
-            </li>
-          );
-        })}
-      </ol>
+      <div className={styles.tab} data-band="clean">
+        <h2 className={styles.face} id={headingId}>
+          <span className={styles.heading}>Nothing flagged</span>
+        </h2>
+        <div className={styles.body}>
+          <p className={styles.text}>
+            Redline looked for these kinds of clauses and found none that could hurt you:
+          </p>
+          <ul className={styles.checked}>
+            {checked.map((type) => (
+              <li key={type.id}>{type.label}</li>
+            ))}
+          </ul>
+          <p className={styles.meta}>
+            It didn&rsquo;t check for anything else, so read the rest before you sign.
+          </p>
+        </div>
+      </div>
     </section>
+  );
+}
+
+/**
+ * One Flag as an index tab.
+ *
+ * @param {{
+ *   flag: TabFlag,
+ *   rank: number,
+ *   total: number,
+ *   active: boolean,
+ *   onShow: () => void,
+ *   showRef: (node: HTMLButtonElement | null) => void,
+ *   documentId: string,
+ *   dismiss?: { dismissed: boolean, pending: boolean, onToggle: () => void },
+ * }} props
+ */
+export function FlagTab({ flag, rank, total, active, onShow, showRef, documentId, dismiss }) {
+  const place = ordinal(rank);
+  const band = bandOf(flag);
+  const headingId = `flag-${rank}-heading`;
+  return (
+    <li
+      className={styles.tab}
+      data-band={band}
+      data-first={rank === 1 || undefined}
+      data-active={active || undefined}
+      data-dismissed={dismiss?.dismissed || undefined}
+    >
+      <h3 className={styles.face} id={headingId}>
+        <span className={styles.rank}>{place}</span>
+        <span className={styles.heading}>{CLAUSE_LABELS.get(flag.clauseType) ?? flag.clauseType}</span>
+      </h3>
+      <div className={styles.body}>
+        <p className={styles.meta}>
+          Ranked {place} of {total}. Severity: {severityLabel(flag.severity).toLowerCase()}.
+          {dismiss?.dismissed ? " You dismissed this one." : null}
+        </p>
+        {flag.redLine ? (
+          <p className={styles.redLine}>
+            <span className={styles.redLineTag}>Breaks your red line</span>{" "}
+            <span className={styles.redLineText}>{flag.redLine.text}</span>
+          </p>
+        ) : null}
+        <p className={styles.label}>The sentence</p>
+        <blockquote className={styles.sentence}>
+          <mark className={styles.mark} data-band={band}>
+            {flag.sourceSentence}
+          </mark>
+        </blockquote>
+        <div className={styles.tabActions}>
+          <button
+            type="button"
+            className={styles.find}
+            onClick={onShow}
+            ref={showRef}
+            aria-controls={documentId}
+            aria-describedby={headingId}
+          >
+            Show it in the document
+          </button>
+          {dismiss ? (
+            <button
+              type="button"
+              className={styles.dismiss}
+              onClick={dismiss.onToggle}
+              disabled={dismiss.pending}
+              aria-describedby={headingId}
+            >
+              {dismiss.pending ? "Saving…" : dismiss.dismissed ? "Put it back" : "Dismiss"}
+            </button>
+          ) : null}
+        </div>
+        <p className={styles.label}>What it means</p>
+        <p className={styles.text}>{flag.whatItMeans}</p>
+        <p className={styles.label}>Why it&rsquo;s dangerous</p>
+        <p className={styles.text}>{flag.whyDangerous}</p>
+        {typeof flag.counterOffer === "string" && flag.counterOffer.trim() !== "" ? (
+          <CounterOffer draft={flag.counterOffer} />
+        ) : (
+          <p className={`${styles.meta} ${styles.noCounter}`}>
+            Redline didn&rsquo;t draft a counter-offer for this clause.
+          </p>
+        )}
+      </div>
+    </li>
   );
 }

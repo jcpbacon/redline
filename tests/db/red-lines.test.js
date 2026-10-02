@@ -153,7 +153,8 @@ describe("Red Lines in a saved Document's analysis", () => {
     expect(marked[0].redLine).toEqual(mine);
 
     const stored = analysisFromRecord(await store.latestAnalysis(id), contract);
-    expect(stored?.flags).toEqual(result?.flags);
+    // Read back, a Flag also carries its row id and dismissal (story 23).
+    expect(stored?.flags.map(({ id, dismissedAt, ...flag }) => flag)).toEqual(result?.flags);
     expect(stored?.redLines).toEqual(current);
   });
 

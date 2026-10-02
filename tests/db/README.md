@@ -21,6 +21,10 @@ they delete every Red Line; the snapshot stored with an analysis; a deleted
 Red Line nulling `matched_red_line_id` while the Flag keeps its mark; and the
 `/api/analyze` handler using a signed-in Reader's Red Lines.
 
+`dismiss.test.js` covers dismissing a Flag (ticket #23): `dismissed_at` set
+and cleared through the store as its Reader, read back by `latest_analysis`,
+untouchable by another Reader, and absent from the Flags of a new run.
+
 `pglite-store.js` gives lib/documents/store.js's interface over this database
 as one Reader, running the same view and functions, so
 `tests/documents/analyse-saved.test.js` can drive the analyse-by-id code and
@@ -46,8 +50,9 @@ SUPABASE_URL=… NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=… SUPABASE_SECRET_KEY=�
 ```
 
 `tests/integration/library-live.test.js` runs save → list → open → analyse for
-two Readers the same way, through lib/documents/store.js, and
-`tests/integration/red-lines-live.test.js` does the same for Red Lines.
+two Readers the same way, through lib/documents/store.js;
+`tests/integration/red-lines-live.test.js` does the same for Red Lines, and
+`tests/integration/dismiss-live.test.js` for dismissing a Flag.
 
-Both are skipped whenever any of those three variables is missing, which is why
+All of them are skipped whenever any of those three variables is missing, which is why
 `npm test` reports it as skipped today.

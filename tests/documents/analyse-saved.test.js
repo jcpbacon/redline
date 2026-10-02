@@ -98,7 +98,8 @@ describe("analyseSavedDocument", () => {
     const stored = analysisFromRecord(await storeA.latestAnalysis(id), contract);
     expect(stored?.id).toBe(result?.analysisId);
     expect(stored?.summary).toBe(result?.summary);
-    expect(stored?.flags).toEqual(result?.flags);
+    // Read back, a Flag also carries its row id and dismissal (story 23).
+    expect(stored?.flags.map(({ id, dismissedAt, ...flag }) => flag)).toEqual(result?.flags);
     expect(stored?.checked).toEqual(result?.checked);
 
     const { rows } = await db.query("select model_id, red_lines_snapshot from analyses where id = $1", [result?.analysisId]);

@@ -85,7 +85,8 @@ describe.skipIf(!configured)("the library on the live Supabase project", () => {
     const result = await analyseSavedDocument(storeA, id, { model: stubFromSidecar(sidecar), modelId, logDrop: () => {} });
     const stored = analysisFromRecord(await storeA.latestAnalysis(id), contract);
     expect(stored?.id).toBe(result?.analysisId);
-    expect(stored?.flags).toEqual(result?.flags);
+    // Read back, a Flag also carries its row id and dismissal (story 23).
+    expect(stored?.flags.map(({ id, dismissedAt, ...flag }) => flag)).toEqual(result?.flags);
 
     const again = await analyseSavedDocument(storeA, id, {
       model: stubFromSidecar(sidecar, { summary: "Second run." }),

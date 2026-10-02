@@ -4,7 +4,7 @@ import { as } from "./supabase-shim.js";
  * lib/documents/store.js's interface over the PGlite database, as one Reader.
  *
  * This is not a fake: every method runs the same SQL objects the Supabase
- * store reaches through PostgREST — the documents and red_lines tables, the
+ * store reaches through PostgREST — the documents, flags and red_lines tables, the
  * library_entries view, and the save_analysis / latest_analysis /
  * seed_red_lines functions from
  * supabase/migrations/ — as the `authenticated` role with the Reader's JWT
@@ -82,6 +82,18 @@ export function createPgliteStore(db, readerId) {
           [documentId, summary, modelId, JSON.stringify(redLinesSnapshot), JSON.stringify(checked), JSON.stringify(flags)],
         );
         return { id: /** @type {any} */ (rows[0]).id };
+      });
+    },
+
+    async setFlagDismissed(flagId, dismissed) {
+      if (!UUID.test(flagId)) return null;
+      return run(async (tx) => {
+        const { rows } = await tx.query(
+          "update public.flags set dismissed_at = $2 where id = $1 returning id, dismissed_at",
+          [flagId, dismissed ? new Date().toISOString() : null],
+        );
+        const row = /** @type {any} */ (rows[0]);
+        return row ? { id: row.id, dismissedAt: iso(row.dismissed_at) } : null;
       });
     },
 
